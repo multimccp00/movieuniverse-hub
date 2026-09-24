@@ -18,5 +18,27 @@ Ideas deliberately left out of the current scope. Build only after all core phas
 - TMDB endpoints `/search/tv` and `/tv/{id}`.
 - Add a `media_type` column (`movie` | `tv`) to playlist, rating and status tables (reset DB: `docker compose down -v`).
 
+## More from the TMDB API
+
+Only search and movie details are used today. Best fits for this app:
+
+### Cast, director and trailer on the movie page
+- Use `append_to_response`: `/movie/{id}?append_to_response=credits,videos` returns details + cast/crew + trailers in **one** request and one cache entry.
+- Show top-billed cast, the director, and the official YouTube trailer.
+
+### Trending / popular on the home page
+- `/trending/movie/week` or `/movie/popular`, so the home page isn't empty before a search.
+- Cached like everything else (would benefit from the cache refresh below, since these lists change daily).
+
+### Where to watch in Portugal
+- `/movie/{id}/watch/providers`, filtered to `PT`: streaming, rent, buy.
+- Relevant for NOS (TV and streaming). Data comes from JustWatch, so the page must credit JustWatch.
+
+### Other endpoints available
+- Recommendations / similar movies, reviews, keywords, release dates and age ratings, images, IMDb id, collections (franchises).
+- Discover: filter by genre, year, rating, vote count, language.
+- People: search, actor/director pages with filmography.
+- TV: search, details, seasons, episodes (see TV shows above).
+
 ## Cache refresh
 - Cache entries currently never expire. Add a max age (e.g. refresh vote counts after 7 days).
