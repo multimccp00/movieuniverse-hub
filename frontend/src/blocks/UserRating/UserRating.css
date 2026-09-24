@@ -1,0 +1,35 @@
+.user-rating__mine {
+  gap: var(--space-2);
+}
+
+.user-rating__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.user-rating__button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.user-rating__button:hover,
+.user-rating__button--on {
+  border-color: var(--color-accent);
+}
+
+.user-rating__button--on {
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+  font-weight: 700;
+}
+
+.user-rating__error {
+  color: var(--color-danger);
+}

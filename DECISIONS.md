@@ -67,7 +67,36 @@ The brief marks the cache optional; here it is treated as required.
 - Missing data is always stated: "No votes" instead of "0", "Unknown year", "No poster", "No synopsis available".
 - Posters are loaded by the browser straight from TMDB's image server, which is not part of the API rate limit.
 
+## 10. Playlists and ratings
+
+- **Only TMDB ids are stored** in playlists and ratings, never movie details. Details come from the cache, so there's one source of truth for movie data.
+- **Anyone can view a playlist; only its owner can change it** (403 otherwise). Viewing others' lists is needed to compare playlists.
+- **Delete is a soft delete:** `deleted_at` is set and the playlist disappears everywhere, but the row stays. The seed file already models deletion this way ("apagada").
+- **Adding and removing a movie use `PUT` and `DELETE` on the movie's own address** (`/playlists/3/movies/603`). Doing either twice has the same effect as once, so a double click can't add a movie twice.
+- **The database enforces the rules too:** the pair (playlist, movie) is the primary key, so a movie can't be in the same playlist twice; ratings have a unique (user, movie) pair and a `CHECK` for 1–10 stars. Even a bug in the code can't break these rules.
+- **Adding or rating a movie checks it exists on TMDB** (through the cache), so invented ids are rejected with 404.
+- **One unavailable movie doesn't break a playlist page:** if TMDB can't provide a movie, it's shown as "Unavailable movie" instead of failing the whole page.
+- **The ★ is filled when the movie is in any of your playlists.** Clicking it opens a picker with one checkbox per playlist, plus "create a playlist with this movie". The same picker is on the movie page.
+
+## 11. Seed import
+
+Command: `python -m app.cli seed dados/seed_playlists.json` (run automatically on every API start by docker-compose).
+
+- **Safe to repeat:** every row is matched on a natural key before being created: users by name, playlists by the file's id (`pl-01`, stored as `external_id`), ratings by (user, movie).
+- **It only creates, never updates.** Because it runs on every start, updating would undo users' changes (a changed rating, a deleted playlist, a removed movie) at every restart. An earlier version did exactly that; see `AI_LOG.md` entry 2.
+- **It pre-loads the cache** with every movie in the file (34 distinct), so pages are instant from the first visit. Movies already cached cost no request, so later starts make zero TMDB requests.
+
+### Problems found in the seed data (the brief warns about these)
+
+| Problem | Where | How it's handled |
+|---|---|---|
+| Deleted playlists | `pl-03`, `pl-07` (`"apagada": true`) | Imported with `deleted_at` set: hidden everywhere, but kept. |
+| Same movie twice in one playlist | `pl-01`: Inception (27205) at positions 1 and 6 | Keep the first position, skip the second, print a warning. The database would refuse the duplicate anyway. |
+| Same title, different years | Dune: 841 (1984) in `pl-05`, 438631 (2021) in `pl-01` | Movies are identified by TMDB id, never by title. Cards always show the year. |
+| Movies only in deleted playlists | e.g. Fight Club (550), Se7en (807) in `pl-03` | Imported and cached, but not visible: no active playlist shows them. |
+
+Also handled defensively (not present in the file): star values outside 1–10 are skipped with a warning; usernames are cleaned the same way as at login.
+
 ## Still to write
 - Combined score rule (Phase 5)
-- Problems found in the seed data (Phase 3)
 - The vote-count question from the brief

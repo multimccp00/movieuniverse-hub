@@ -11,6 +11,7 @@ from sqlalchemy.pool import StaticPool
 
 from app.db import Base, get_db
 from app.main import app
+from tests.fake_tmdb import FakeTmdb
 
 
 @pytest.fixture
@@ -32,3 +33,15 @@ def client(db):
     app.dependency_overrides[get_db] = lambda: db
     yield TestClient(app)
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def tmdb(monkeypatch):
+    """A fake TMDB (see fake_tmdb.py); tests never go online."""
+    return FakeTmdb(monkeypatch)
+
+
+def login(client, username):
+    """Log in and return the headers that identify this user on later requests."""
+    client.post("/users/login", json={"username": username})
+    return {"X-User": username}

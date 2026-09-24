@@ -6,6 +6,8 @@ from fastapi.responses import JSONResponse
 
 from app.db import Base, engine
 from app.blocks.movies.router import router as movies_router
+from app.blocks.playlists.router import router as playlists_router
+from app.blocks.ratings.router import router as ratings_router
 from app.blocks.tmdb import models as tmdb_models  # noqa: F401 -- registers the cache table
 from app.blocks.tmdb.client import TmdbError
 from app.blocks.users.router import router as users_router
@@ -24,6 +26,8 @@ app = FastAPI(title="MovieUniverse Hub API", lifespan=lifespan)
 # which is how create_all() above learns those tables exist.
 app.include_router(users_router)
 app.include_router(movies_router)
+app.include_router(playlists_router)
+app.include_router(ratings_router)
 
 
 @app.exception_handler(TmdbError)
