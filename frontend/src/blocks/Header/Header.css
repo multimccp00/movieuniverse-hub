@@ -1,0 +1,23 @@
+/* Header block. Only uses tokens from style.css, never raw colors/sizes. */
+.header {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block: var(--space-3);
+}
+
+.header__brand {
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.header__nav {
+  display: flex;
+  gap: var(--space-4);
+}

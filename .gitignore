@@ -1,0 +1,22 @@
+# Secrets: the real .env holds the TMDB key and must never be committed
+.env
+
+# Personal study notes, kept local only
+docs/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Node
+node_modules/
+dist/
+
+# Editors / OS / tools
+.claude/
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

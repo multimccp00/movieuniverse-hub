@@ -1,0 +1,40 @@
+# Starts the whole app with one command: docker compose up --build
+# Three services: db (MySQL), api (Python backend), web (React frontend).
+
+services:
+  db:
+    image: mysql:8.4
+    env_file: .env # reads MYSQL_* variables from .env
+    volumes:
+      - db_data:/var/lib/mysql # keeps the data when containers restart
+    healthcheck: # "healthy" only once MySQL accepts network connections
+      # 127.0.0.1 forces a TCP check. "localhost" would use the local socket, which
+      # answers during MySQL's first-run setup before the real server is up.
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build: ./backend
+    env_file: .env
+    environment:
+      # "db" is the hostname of the MySQL service inside the Docker network
+      DATABASE_URL: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy # wait for MySQL before starting
+
+  web:
+    build: ./frontend
+    environment:
+      API_TARGET: http://api:8000 # where Vite forwards /api requests
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
+volumes:
+  db_data:
