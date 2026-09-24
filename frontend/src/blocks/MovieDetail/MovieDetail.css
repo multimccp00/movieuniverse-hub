@@ -1,0 +1,32 @@
+.movie-detail {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: var(--space-6);
+  align-items: start;
+}
+
+.movie-detail__poster {
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+.movie-detail__poster--empty {
+  display: grid;
+  place-items: center;
+  background: var(--color-surface-2);
+  color: var(--color-muted);
+}
+
+/* Phones: poster above the text instead of beside it */
+@media (max-width: 640px) {
+  .movie-detail {
+    grid-template-columns: 1fr;
+  }
+
+  .movie-detail__poster {
+    max-width: 200px;
+  }
+}
