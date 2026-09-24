@@ -61,6 +61,12 @@ img {
   max-width: 100%;
 }
 
+/* Lists used for layout (grids of cards): no bullets, no indent */
+ul[role="list"] {
+  list-style: none;
+  padding: 0;
+}
+
 /* ---------- Base ---------- */
 body {
   background: var(--color-bg);

@@ -8,6 +8,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap; /* small screens: search drops to its own line */
+  gap: var(--space-3) var(--space-5);
   padding-block: var(--space-3);
 }
 
