@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.db import Base, engine
+from app.blocks.users.router import router as users_router
 
 
 @asynccontextmanager
@@ -14,6 +15,10 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title="MovieUniverse Hub API", lifespan=lifespan)
+
+# Plug in each block. Importing a router also imports its models,
+# which is how create_all() above learns those tables exist.
+app.include_router(users_router)
 
 
 @app.get("/health")
