@@ -1,0 +1,19 @@
+.login {
+  max-width: 360px;
+  padding: var(--space-5);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.login__field {
+  gap: var(--space-1);
+}
+
+.login__error {
+  color: var(--color-danger);
+}
+
+.login__hint {
+  font-size: var(--text-sm);
+}
