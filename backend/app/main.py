@@ -8,8 +8,7 @@ from app.db import Base, engine
 from app.blocks.movies.router import router as movies_router
 from app.blocks.playlists.router import router as playlists_router
 from app.blocks.ratings.router import router as ratings_router
-from app.blocks.tmdb import models as tmdb_models  # noqa: F401 -- registers the cache table
-from app.blocks.tmdb.client import TmdbError
+from app.blocks.tmdb.client import TmdbError  # client.py also loads the cache table
 from app.blocks.users.router import router as users_router
 
 

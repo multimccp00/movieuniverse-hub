@@ -1,7 +1,5 @@
 """Playlists and the movies in them."""
-from datetime import datetime
-
-from sqlalchemy import ForeignKey, String, func
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db import Base
@@ -12,12 +10,11 @@ class Playlist(Base):
     __tablename__ = "playlists"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    # Id from the seed file ("pl-01"), so importing twice updates instead of duplicating.
+    # Id from the seed file ("pl-01"), so importing twice resets it instead of duplicating.
     # Empty for playlists created in the app.
     external_id: Mapped[str | None] = mapped_column(String(20), unique=True, default=None)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     name: Mapped[str] = mapped_column(String(100))
-    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
     # relationship: lets code write playlist.owner / playlist.movies instead of queries
     owner: Mapped[User] = relationship()
