@@ -5,6 +5,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
 from app.db import Base, engine
+from app.blocks.compare.router import router as compare_router
 from app.blocks.movies.router import router as movies_router
 from app.blocks.playlists.router import router as playlists_router
 from app.blocks.ratings.router import router as ratings_router
@@ -27,6 +28,7 @@ app.include_router(users_router)
 app.include_router(movies_router)
 app.include_router(playlists_router)
 app.include_router(ratings_router)
+app.include_router(compare_router)
 
 
 @app.exception_handler(TmdbError)

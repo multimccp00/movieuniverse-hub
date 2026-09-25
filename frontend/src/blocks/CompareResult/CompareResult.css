@@ -1,0 +1,46 @@
+.compare-result__verdict {
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.compare-result__sides {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-4);
+}
+
+.compare-result__side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.compare-result__side--winner {
+  border-color: var(--color-accent);
+}
+
+.compare-result__average {
+  font-size: var(--text-xl);
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.compare-result__movies {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.compare-result__movies li {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.compare-result__score {
+  margin-left: auto; /* pushes the score to the right edge */
+  font-variant-numeric: tabular-nums; /* digits line up in a column */
+}
