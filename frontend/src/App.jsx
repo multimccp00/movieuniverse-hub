@@ -6,6 +6,7 @@ import SearchPage from './pages/SearchPage.jsx'
 import MovieDetailPage from './pages/MovieDetailPage.jsx'
 import PlaylistPage from './pages/PlaylistPage.jsx'
 import ComparePage from './pages/ComparePage.jsx'
+import AboutPage from './pages/AboutPage.jsx'
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/movies/:id" element={<MovieDetailPage />} />
           <Route path="/playlists/:id" element={<PlaylistPage />} />
           <Route path="/compare" element={<ComparePage />} />
+          <Route path="/about" element={<AboutPage />} />
           <Route path="*" element={<p>Page not found.</p>} />
         </Routes>
       </main>

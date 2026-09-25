@@ -1,0 +1,8 @@
+.about {
+  max-width: 720px;
+}
+
+.about__attribution a {
+  color: var(--color-accent);
+  text-decoration: underline;
+}

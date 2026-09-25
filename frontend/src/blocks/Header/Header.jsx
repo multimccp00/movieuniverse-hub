@@ -13,6 +13,7 @@ export default function Header() {
         <nav className="header__nav">
           <Link to="/">Home</Link>
           <Link to="/compare">Compare</Link>
+          <Link to="/about">About</Link>
           <UserMenu />
         </nav>
       </div>

@@ -2,6 +2,15 @@
 
 Why the project is built the way it is. Each entry: what was chosen, what else was considered, why.
 
+## The three main decisions
+
+1. **The combined score is a Bayesian average** (section 12). Every vote counts once, TMDB or app, and every movie starts with 1,000 imaginary votes of 6.0. Few votes stay near 6.0, many votes give the real average: 8.9 with 12 votes scores 6.03, 8.4 with 30,000 scores 8.32, and three app users giving 10 don't change the order. It's one pure function used everywhere.
+2. **Every TMDB answer is cached in MySQL, and the cache is treated as required** (section 8). All TMDB calls go through one function that checks the cache first, so the same request never reaches TMDB twice, even after a restart, and the rate limit is respected with a throttle on top.
+3. **The code is organised in self-contained "blocks"** (section 2), like WordPress: one folder per feature on the backend (table, JSON shapes, logic, endpoints) and one folder per UI piece on the frontend (component, CSS, test), with a single design-system stylesheet. This is what let password login replace name-only login by changing one function (section 7).
+
+## Contents
+1. Stack · 2. Structure · 3. Running · 4. Tables · 5. Tests · 6. Proxy · 7. Login · 8. Cache · 9. Search and movie pages · 10. Playlists and ratings · 11. Seed import (and the problems in the seed data) · 12. Combined score (and why the number of votes matters) · 13. Comparing playlists · 14. The higher/lower game
+
 ## 1. Stack
 
 | Part | Choice | Why |
@@ -156,3 +165,9 @@ All four are automated tests (`backend/tests/test_scoring.py`).
 - **Comparing a playlist with itself** is refused (422).
 - **Extra comparisons shown:** the movies in both playlists, how many movies each has, and every movie's combined score side by side.
 - Each distinct movie is scored once, even when it's in both playlists.
+
+## 14. The higher/lower game (optional): not built
+
+The brief marks the game as optional. It was deliberately left out to finish the required parts well, and is the first item in `features.md`.
+
+What is already in place for it: the combined score is one pure function (`combined_score`), so the game would call it directly, as the brief requires ("the same function, not a copy"). The rules the brief asks to decide (minimum score gap for a pair, which low-vote movies to leave out, pairs from the whole catalog or only the user's playlists) are listed in `features.md` to be decided when it's built.
