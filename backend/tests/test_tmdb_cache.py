@@ -2,12 +2,6 @@ import pytest
 
 from app.blocks.tmdb import client
 from app.blocks.tmdb.models import TmdbCache
-from tests.fake_tmdb import FakeTmdb
-
-
-@pytest.fixture
-def tmdb(monkeypatch):
-    return FakeTmdb(monkeypatch)
 
 
 def test_second_request_is_served_from_cache(db, tmdb):

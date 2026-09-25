@@ -1,16 +1,27 @@
 .movie-card {
+  position: relative; /* the ★ is placed relative to the card */
+  height: 100%;
+}
+
+.movie-card__link {
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden;
+  overflow: hidden; /* clips the poster to the rounded corners */
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
 }
 
-.movie-card:hover {
+.movie-card__link:hover {
   border-color: var(--color-accent);
   color: inherit;
+}
+
+.movie-card__star {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
 }
 
 .movie-card__poster {

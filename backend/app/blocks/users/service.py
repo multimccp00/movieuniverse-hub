@@ -22,19 +22,24 @@ def get_or_create(db: Session, username: str) -> User:
     return user
 
 
-def get_current_user(
+def get_optional_user(
     x_user: str | None = Header(default=None),  # reads the "X-User" request header
     db: Session = Depends(get_db),
-) -> User:
-    """FastAPI dependency: every endpoint that needs "who is this?" uses this.
+) -> User | None:
+    """FastAPI dependency: who is making this request? None if nobody is logged in.
 
-    Only this function changes when password login arrives; endpoints stay the same.
+    The single place that decides identity. Only this function changes when
+    password login arrives; endpoints stay the same.
     """
     # ponytail: trusts the X-User header (username-only identity, allowed by the brief).
     # Anyone can claim any name. Replaced by a session cookie in the password phase.
     if not x_user:
-        raise HTTPException(status_code=401, detail="Not logged in")
-    user = get_by_username(db, x_user.strip().lower())
+        return None
+    return get_by_username(db, x_user.strip().lower())
+
+
+def get_current_user(user: User | None = Depends(get_optional_user)) -> User:
+    """FastAPI dependency for endpoints that require being logged in (401 otherwise)."""
     if user is None:
-        raise HTTPException(status_code=401, detail="Unknown user")
+        raise HTTPException(status_code=401, detail="Not logged in")
     return user

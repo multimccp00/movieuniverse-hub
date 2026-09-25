@@ -1,13 +1,3 @@
-import pytest
-
-from tests.fake_tmdb import FakeTmdb
-
-
-@pytest.fixture
-def tmdb(monkeypatch):
-    return FakeTmdb(monkeypatch)
-
-
 def test_search_returns_trimmed_movies(client, tmdb):
     body = client.get("/movies/search", params={"q": "matrix"}).json()
     assert body["total_results"] == 1

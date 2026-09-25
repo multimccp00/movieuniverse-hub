@@ -67,7 +67,38 @@ The brief marks the cache optional; here it is treated as required.
 - Missing data is always stated: "No votes" instead of "0", "Unknown year", "No poster", "No synopsis available".
 - Posters are loaded by the browser straight from TMDB's image server, which is not part of the API rate limit.
 
+## 10. Playlists and ratings
+
+- **Only TMDB ids are stored** in playlists and ratings, never movie details. Details come from the cache, so there's one source of truth for movie data.
+- **Anyone can view a playlist; only its owner can change it** (403 otherwise). Viewing others' lists is needed to compare playlists.
+- **Deleting really deletes** the playlist and its movie rows. A "soft delete" (keep the row, mark it deleted) was considered and rejected: keeping data the user deleted has no purpose here (`AI_LOG.md` entry 3).
+- **Adding and removing a movie use `PUT` and `DELETE` on the movie's own address** (`/playlists/3/movies/603`). Doing either twice has the same effect as once, so a double click can't add a movie twice.
+- **The database enforces the rules too:** the pair (playlist, movie) is the primary key, so a movie can't be in the same playlist twice; ratings have a unique (user, movie) pair and a `CHECK` for 1–10 stars. Even a bug in the code can't break these rules.
+- **Adding or rating a movie checks it exists on TMDB** (through the cache), so invented ids are rejected with 404.
+- **One unavailable movie doesn't break a playlist page:** if TMDB can't provide a movie, it's shown as "Unavailable movie" instead of failing the whole page.
+- **The ★ is filled when the movie is in any of your playlists.** Clicking it opens a picker with one checkbox per playlist, plus "create a playlist with this movie". The same picker is on the movie page.
+
+## 11. Seed import
+
+Command: `python -m app.cli seed dados/seed_playlists.json`
+
+- **Purpose: the example data matches the file after every import.** Everyone doing the exercise imports the same file, so everyone starts from the same data. A seeded playlist deleted in the app comes back; seeded playlists' movies and seeded ratings are reset to the file's values.
+- **Never duplicates:** every row is matched on a natural key first: users by name, playlists by the file's id (`pl-01`, stored as `external_id`), ratings by (user, movie). Found = reset to the file, not found = created.
+- **Data created in the app is never touched** (other playlists, other ratings).
+- **Automatic only on a new database:** docker-compose runs it with `--if-empty` on every start, which imports only when the database has no users yet. So the first start gets the example data, and restarts keep what users changed. An earlier version ran the full import on every start and reset users' changes at each restart (`AI_LOG.md` entry 2).
+- **It pre-loads the cache** with every imported movie (30 distinct), so pages are instant from the first visit. Movies already cached cost no request.
+
+### Problems found in the seed data (the brief warns about these)
+
+| Problem | Where | How it's handled |
+|---|---|---|
+| Deleted playlists | `pl-03`, `pl-07` (`"apagada": true`) | Not imported: they are deleted in the source data. |
+| Same movie twice in one playlist | `pl-01`: Inception (27205) at positions 1 and 6 | Keep the first position, skip the second, print a warning. The database would refuse the duplicate anyway. |
+| Same title, different years | Dune: 841 (1984) in `pl-05`, 438631 (2021) in `pl-01` | Movies are identified by TMDB id, never by title. Cards always show the year. |
+| Movies only in deleted playlists | 550 (Fight Club), 807 (Se7en), 348, 289, all in `pl-03` | Not imported, since their only playlist isn't. Nothing else references them (no ratings), so nothing is left pointing at them. They can still be found by search like any movie. |
+
+Also handled defensively (not present in the file): star values outside 1–10 are skipped with a warning; usernames are cleaned the same way as at login.
+
 ## Still to write
 - Combined score rule (Phase 5)
-- Problems found in the seed data (Phase 3)
 - The vote-count question from the brief

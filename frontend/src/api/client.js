@@ -4,7 +4,7 @@
 export const USER_KEY = 'username'
 
 // An error that remembers the HTTP status (e.g. 401), so callers can react to it
-export class ApiError extends Error {
+class ApiError extends Error {
   constructor(status, message) {
     super(message)
     this.status = status

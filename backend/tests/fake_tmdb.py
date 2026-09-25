@@ -21,6 +21,7 @@ class FakeTmdb:
     def __init__(self, monkeypatch):
         self.requests = []  # every request that reached "TMDB"
         self.status = {}  # path -> status code to answer instead of 200
+        self.any_movie = False  # True: every /movie/<id> exists (for the seed file's ids)
         monkeypatch.setattr(client.settings, "tmdb_api_key", "test-key")
         monkeypatch.setattr(client, "_http", httpx.Client(transport=httpx.MockTransport(self.handle)))
         monkeypatch.setattr(client, "_throttle", SlidingWindow(limit=1000, window=10))
@@ -38,4 +39,7 @@ class FakeTmdb:
         movies = {"/movie/603": MATRIX, "/movie/999": UNRELEASED}
         if path in movies:
             return httpx.Response(200, json=movies[path])
+        if self.any_movie and path.startswith("/movie/"):
+            tmdb_id = int(path.removeprefix("/movie/"))
+            return httpx.Response(200, json={**MATRIX, "id": tmdb_id, "title": f"Movie {tmdb_id}"})
         return httpx.Response(404, json={})
