@@ -1,6 +1,4 @@
 """Playlist logic. Anyone can view a playlist; only its owner can change it."""
-from datetime import datetime
-
 from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -22,17 +20,17 @@ def to_out(playlist: Playlist) -> PlaylistOut:
     )
 
 
-def _active(db: Session, playlist_id: int) -> Playlist:
-    """The playlist, or 404 if it doesn't exist or was deleted."""
+def _existing(db: Session, playlist_id: int) -> Playlist:
+    """The playlist, or 404 if it doesn't exist."""
     playlist = db.get(Playlist, playlist_id)
-    if playlist is None or playlist.deleted_at is not None:
+    if playlist is None:
         raise HTTPException(status_code=404, detail="Playlist not found")
     return playlist
 
 
 def _owned(db: Session, user: User, playlist_id: int) -> Playlist:
     """The playlist, or 403 if it belongs to someone else."""
-    playlist = _active(db, playlist_id)
+    playlist = _existing(db, playlist_id)
     if playlist.user_id != user.id:
         raise HTTPException(status_code=403, detail="Not your playlist")
     return playlist
@@ -52,15 +50,11 @@ def add_to_playlist(playlist: Playlist, tmdb_id: int, position: int | None = Non
 
 
 def list_all(db: Session) -> list[Playlist]:
-    return list(db.scalars(select(Playlist).where(Playlist.deleted_at.is_(None)).order_by(Playlist.id)))
+    return list(db.scalars(select(Playlist).order_by(Playlist.id)))
 
 
 def list_for_user(db: Session, user: User) -> list[Playlist]:
-    return list(db.scalars(
-        select(Playlist)
-        .where(Playlist.user_id == user.id, Playlist.deleted_at.is_(None))
-        .order_by(Playlist.id)
-    ))
+    return list(db.scalars(select(Playlist).where(Playlist.user_id == user.id).order_by(Playlist.id)))
 
 
 def create(db: Session, user: User, name: str) -> Playlist:
@@ -72,8 +66,7 @@ def create(db: Session, user: User, name: str) -> Playlist:
 
 
 def delete(db: Session, user: User, playlist_id: int) -> None:
-    playlist = _owned(db, user, playlist_id)
-    playlist.deleted_at = datetime.now()  # soft delete, same as "apagada" in the seed file
+    db.delete(_owned(db, user, playlist_id))  # its movie rows go too (cascade)
     db.commit()
 
 
@@ -89,7 +82,7 @@ def _summary_or_placeholder(db: Session, tmdb_id: int) -> MovieSummary:
 
 
 def detail(db: Session, playlist_id: int) -> PlaylistDetail:
-    playlist = _active(db, playlist_id)
+    playlist = _existing(db, playlist_id)
     return PlaylistDetail(
         **to_out(playlist).model_dump(),
         movies=[_summary_or_placeholder(db, m.tmdb_id) for m in playlist.movies],

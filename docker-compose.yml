@@ -23,8 +23,8 @@ services:
       DATABASE_URL: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db:3306/${MYSQL_DATABASE}
     volumes:
       - ./dados:/app/dados:ro # the seed file, read-only
-    # Import the seed data (safe to repeat: nothing is duplicated), then start the API
-    command: sh -c "python -m app.cli seed dados/seed_playlists.json && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    # First start (empty database): import the example data. Then start the API.
+    command: sh -c "python -m app.cli seed dados/seed_playlists.json --if-empty && uvicorn app.main:app --host 0.0.0.0 --port 8000"
     ports:
       - "8000:8000"
     depends_on:

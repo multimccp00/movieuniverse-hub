@@ -17,17 +17,19 @@ Prerequisite: [Docker Desktop](https://www.docker.com/products/docker-desktop/).
    - App: http://localhost:5173
    - API docs (Swagger): http://localhost:8000/docs
 
-The example data (`dados/seed_playlists.json`: users ana, bruno and carla, 10 playlists, 20 ratings) is imported automatically on start. Log in with one of those names to see their playlists.
+The example data (`dados/seed_playlists.json`: users ana, bruno and carla, their playlists and 20 ratings) is imported automatically on the first start. Log in with one of those names to see their playlists.
 
 ## Example data import
 
-Runs automatically on every start. To run it by hand:
+Runs automatically on the first start (empty database). To run it by hand at any time:
 
 ```bash
 docker compose exec api python -m app.cli seed dados/seed_playlists.json
 ```
 
-It can run any number of times: it only creates what is missing, so nothing is duplicated and changes made in the app are kept. To start over from scratch: `docker compose down -v` (deletes the database), then `docker compose up`.
+It puts the example data back exactly as the file has it: seeded playlists deleted in the app come back, and seeded movies and ratings return to the file's values. Nothing is ever duplicated, and data created in the app is not touched. Playlists marked `"apagada"` in the file are not imported.
+
+To start over from scratch: `docker compose down -v` (deletes the database), then `docker compose up`.
 
 ## Tests
 

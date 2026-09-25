@@ -10,14 +10,18 @@ from app.blocks.ratings.schemas import RatingSummary
 from app.blocks.users.models import User
 
 
-def upsert(db: Session, user_id: int, tmdb_id: int, stars: int) -> None:
-    """Create the user's rating, or change it if one exists ("upsert" = update or insert)."""
+def upsert(db: Session, user_id: int, tmdb_id: int, stars: int, rated_at: datetime | None = None) -> None:
+    """Create the user's rating, or change it if one exists ("upsert" = update or insert).
+
+    Shared by the API (rated now) and the seed import (date from the file).
+    """
+    rated_at = rated_at or datetime.now()
     rating = db.scalar(select(Rating).where(Rating.user_id == user_id, Rating.tmdb_id == tmdb_id))
     if rating is None:
-        db.add(Rating(user_id=user_id, tmdb_id=tmdb_id, stars=stars))
+        db.add(Rating(user_id=user_id, tmdb_id=tmdb_id, stars=stars, rated_at=rated_at))
     else:
         rating.stars = stars
-        rating.rated_at = datetime.now()
+        rating.rated_at = rated_at
 
 
 def app_stats(db: Session, tmdb_id: int) -> tuple[float | None, int]:

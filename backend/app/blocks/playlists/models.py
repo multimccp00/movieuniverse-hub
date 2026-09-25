@@ -17,15 +17,14 @@ class Playlist(Base):
     external_id: Mapped[str | None] = mapped_column(String(20), unique=True, default=None)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     name: Mapped[str] = mapped_column(String(100))
-    # Soft delete: set = deleted (hidden everywhere), but the row stays
-    deleted_at: Mapped[datetime | None] = mapped_column(default=None)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
     # relationship: lets code write playlist.owner / playlist.movies instead of queries
     owner: Mapped[User] = relationship()
     movies: Mapped[list["PlaylistMovie"]] = relationship(
         order_by="PlaylistMovie.position",
-        cascade="all, delete-orphan",  # removing from the list deletes the row
+        # removing a movie from the list deletes its row; deleting the playlist deletes all of them
+        cascade="all, delete-orphan",
     )
 
 

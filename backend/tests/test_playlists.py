@@ -1,3 +1,4 @@
+from app.blocks.playlists.models import PlaylistMovie
 from app.blocks.tmdb.models import TmdbCache
 from tests.conftest import login
 
@@ -57,12 +58,14 @@ def test_only_owner_can_change_a_playlist(client, tmdb):
     assert client.get(f"/playlists/{playlist['id']}").status_code == 200  # but anyone can view
 
 
-def test_deleted_playlist_disappears(client, tmdb):
+def test_deleted_playlist_is_really_gone(client, tmdb, db):
     ana = login(client, "ana")
     playlist = create(client, ana)
+    client.put(f"/playlists/{playlist['id']}/movies/603", headers=ana)
     assert client.delete(f"/playlists/{playlist['id']}", headers=ana).status_code == 204
     assert client.get(f"/playlists/{playlist['id']}").status_code == 404
     assert client.get("/playlists/mine", headers=ana).json() == []
+    assert db.query(PlaylistMovie).count() == 0  # its movie rows were deleted too
 
 
 def test_unavailable_movie_does_not_break_playlist(client, tmdb, db):

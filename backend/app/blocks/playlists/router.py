@@ -13,7 +13,7 @@ router = APIRouter(prefix="/playlists", tags=["playlists"])
 
 @router.get("", response_model=list[PlaylistOut])
 def list_all(db: Session = Depends(get_db)):
-    """Every playlist that isn't deleted, from every user (used to compare lists)."""
+    """Every playlist, from every user (used to compare lists)."""
     return [service.to_out(p) for p in service.list_all(db)]
 
 
@@ -37,7 +37,7 @@ def detail(playlist_id: int, db: Session = Depends(get_db)):
 
 @router.delete("/{playlist_id}", status_code=204)
 def delete(playlist_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Delete (hide) one of your playlists. 204 = done, nothing to send back."""
+    """Delete one of your playlists. 204 = done, nothing to send back."""
     service.delete(db, user, playlist_id)
 
 
