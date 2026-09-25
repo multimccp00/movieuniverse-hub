@@ -17,3 +17,15 @@
 .login__hint {
   font-size: var(--text-sm);
 }
+
+/* Looks like a link: it switches the form, it doesn't submit it */
+.login__switch {
+  align-self: flex-start;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-accent);
+  font: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}

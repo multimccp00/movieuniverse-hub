@@ -17,7 +17,14 @@ Prerequisite: [Docker Desktop](https://www.docker.com/products/docker-desktop/).
    - App: http://localhost:5173
    - API docs (Swagger): http://localhost:8000/docs
 
-The example data (`dados/seed_playlists.json`: users ana, bruno and carla, their playlists and 20 ratings) is imported automatically on the first start. Log in with one of those names to see their playlists.
+The example data (`dados/seed_playlists.json`: users ana, bruno and carla, their playlists and 20 ratings) is imported automatically on the first start.
+
+## Logging in
+
+- Example users: **ana**, **bruno**, **carla**, all with the password **`demo1234`**.
+- Or create your own account from the login form ("No account? Create one"). Passwords need 8 to 128 characters.
+
+Passwords are stored hashed with Argon2; the login is kept in an `HttpOnly` cookie. Details: `DECISIONS.md`, section 7.
 
 ## Example data import
 
@@ -27,7 +34,7 @@ Runs automatically on the first start (empty database). To run it by hand at any
 docker compose exec api python -m app.cli seed dados/seed_playlists.json
 ```
 
-It puts the example data back exactly as the file has it: seeded playlists deleted in the app come back, and seeded movies and ratings return to the file's values. Nothing is ever duplicated, and data created in the app is not touched. Playlists marked `"apagada"` in the file are not imported.
+It puts the example data back exactly as the file has it: seeded playlists deleted in the app come back, seeded movies and ratings return to the file's values, and the example users' password is reset to `demo1234`. Nothing is ever duplicated, and data created in the app is not touched. Playlists marked `"apagada"` in the file are not imported.
 
 To start over from scratch: `docker compose down -v` (deletes the database), then `docker compose up`.
 

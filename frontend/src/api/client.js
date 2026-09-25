@@ -1,7 +1,6 @@
 // The one place that talks to the backend. Every block calls api(...) instead of fetch.
-
-// localStorage key where the logged-in username is kept between visits
-export const USER_KEY = 'username'
+// Login is a cookie the backend sets; the browser sends it back with every /api request
+// by itself (same address, thanks to the Vite proxy), so there's nothing to add here.
 
 // An error that remembers the HTTP status (e.g. 401), so callers can react to it
 class ApiError extends Error {
@@ -21,16 +20,10 @@ function errorMessage(data) {
 }
 
 export async function api(path, { method = 'GET', body } = {}) {
-  const headers = {}
-  // Tell the backend who we are (see get_current_user in the backend)
-  const user = localStorage.getItem(USER_KEY)
-  if (user) headers['X-User'] = user
-  if (body !== undefined) headers['Content-Type'] = 'application/json'
-
   // "/api" goes through the Vite proxy to the backend
   const response = await fetch(`/api${path}`, {
     method,
-    headers,
+    headers: body === undefined ? {} : { 'Content-Type': 'application/json' },
     body: body === undefined ? undefined : JSON.stringify(body),
   })
 

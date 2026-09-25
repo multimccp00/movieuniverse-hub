@@ -5,9 +5,10 @@ from sqlalchemy import func, select
 
 from app.blocks.playlists.models import Playlist, PlaylistMovie
 from app.blocks.ratings.models import Rating
-from app.blocks.seed.importer import import_seed
+from app.blocks.seed.importer import DEMO_PASSWORD, import_seed
 from app.blocks.tmdb.models import TmdbCache
 from app.blocks.users.models import User
+from tests.conftest import login
 
 # The real file from the brief, never edited. Found by walking up the folders:
 # it's at <repo>/dados locally and at /app/dados inside the Docker container.
@@ -64,7 +65,7 @@ def test_duplicate_movie_keeps_first_position(db, tmdb):
 def test_import_restores_the_example_data(db, client, tmdb):
     """Everyone imports the same file, so importing again puts it back as it was."""
     import_seed(db, SEED, warm_cache=False)
-    ana = {"X-User": "ana"}
+    ana = login(client, "ana", DEMO_PASSWORD)
     pl01_id = playlist(db, "pl-01").id
     pl02_id = playlist(db, "pl-02").id
 
@@ -79,6 +80,13 @@ def test_import_restores_the_example_data(db, client, tmdb):
     assert 603 in [m.tmdb_id for m in playlist(db, "pl-01").movies]
     assert playlist(db, "pl-02") is not None
     assert client.get(f"/playlists/{mine['id']}").status_code == 200  # untouched
+
+
+def test_seed_users_log_in_with_the_demo_password(db, client, tmdb):
+    import_seed(db, SEED, warm_cache=False)
+    for name in ("ana", "bruno", "carla"):
+        response = client.post("/users/login", json={"username": name, "password": DEMO_PASSWORD})
+        assert response.status_code == 200, name
 
 
 def test_invalid_stars_are_skipped(db, tmdb):

@@ -7,6 +7,9 @@ Running it again never duplicates anything, because every row is matched on a
 natural key first: users by name, playlists by the file's id ("pl-01"),
 ratings by (user, movie).
 Data created in the app (other playlists, other ratings) is never touched.
+
+The file has no passwords, so every seed user gets DEMO_PASSWORD (written in the
+README): anyone testing the app can log in as ana, bruno or carla.
 """
 from datetime import datetime
 
@@ -19,15 +22,23 @@ from app.blocks.playlists.models import Playlist
 from app.blocks.playlists.service import add_to_playlist
 from app.blocks.ratings.service import upsert as upsert_rating
 from app.blocks.tmdb.client import TmdbError
-from app.blocks.users.service import get_or_create
+from app.blocks.users.service import get_or_create, hash_password
+
+DEMO_PASSWORD = "demo1234"  # ponytail: public demo password for the example users, by design
 
 
 def import_seed(db: Session, data: dict, warm_cache: bool = True) -> list[str]:
     """Import the file's data. Returns warnings about problems found in the data."""
     warnings = []
+    users = {}  # name -> User, so each user's password is hashed once per import (Argon2 is slow)
 
     def user_for(name: str):
-        return get_or_create(db, name.strip().lower())  # same cleaning as the login
+        name = name.strip().lower()  # same cleaning as the login
+        if name not in users:
+            user = get_or_create(db, name)
+            user.password_hash = hash_password(DEMO_PASSWORD)  # reset, like the rest of the example data
+            users[name] = user
+        return users[name]
 
     for entry in data.get("utilizadores", []):
         user_for(entry["nome"])

@@ -41,12 +41,23 @@ Inspired by WordPress blocks: the app is built from small, self-contained, reusa
 - The browser calls `/api/...` on the frontend's own address, and Vite forwards the call to the API.
 - Considered: calling the API directly and enabling CORS on the backend. The proxy avoids CORS configuration completely, and the frontend never hardcodes the API address.
 
-## 7. Identity: username only (for now)
+## 7. Login: username + password
 
-- The brief allows identifying users by a chosen name only. Logging in with a new name creates the user.
-- Usernames are trimmed and lowercased, so "Ana" and "ana" are the same person.
-- The frontend sends the name in an `X-User` header, and the backend reads it in one function, `get_current_user`.
-- Known limitation: the header can be faked. Password login (hashed passwords + secure cookie) is planned next. Because every endpoint goes through `get_current_user`, only that function will change.
+The brief allows name-only identity but says a username and password is more robust; if used, passwords must be hashed and only logged-in users may manage their playlists and ratings.
+
+- **Built in two steps on purpose.** First username-only (an `X-User` header), with every endpoint asking one function, `get_current_user`, who the user is. Then passwords: only that function and the users block changed; no playlist or rating endpoint was touched.
+- **Passwords are hashed with Argon2** (`argon2-cffi`), one of the two algorithms the brief names. Argon2 is slow and memory-hungry on purpose, which makes guessing passwords from a stolen database very expensive. Each hash has its own random salt, so two users with the same password get different hashes.
+- **Rules:** 8 to 128 characters, nothing else. Length is what makes a password strong; "must contain a symbol" rules mostly produce predictable passwords.
+- **Sessions are a cookie, not a token the frontend stores.** On login the server creates a random 32-byte token, stores only its SHA-256 hash in the `sessions` table, and sends the token in a cookie that is:
+  - `HttpOnly`: page JavaScript can't read it, so an injected script can't steal it;
+  - `SameSite=Lax`: not sent with requests started by other websites, which blocks cross-site request forgery;
+  - valid 7 days (expiry stored in the database too).
+  Logging out deletes the session row, so the token stops working immediately.
+  - `Secure` (HTTPS only) is **not** set, because the app runs on plain `http://localhost`. It would be required in production.
+- **Why a database session and not a JWT:** a session can be ended on logout by deleting its row; a JWT stays valid until it expires. The database is already there, and one lookup per request is cheap.
+- **Login errors don't reveal which usernames exist:** "wrong password" and "no such user" give the same message, and an unknown user still costs the same Argon2 check, so response time doesn't give it away either.
+- **Seed users** (ana, bruno, carla have no password in the file) get the demo password `demo1234`, written in the README, so anyone reviewing can log in as them. It's a known password on purpose, for example accounts only.
+- **Not done:** limiting repeated login attempts (brute force). Argon2's slowness already limits guessing speed; a per-account attempt limit would be the next step for production.
 
 ## 8. TMDB cache
 
