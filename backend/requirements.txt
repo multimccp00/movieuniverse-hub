@@ -6,3 +6,4 @@ cryptography>=43  # needed by pymysql for MySQL 8 password auth
 pydantic-settings==2.*
 httpx==0.28.*
 pytest==8.*
+argon2-cffi==23.*  # password hashing

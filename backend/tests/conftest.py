@@ -41,7 +41,15 @@ def tmdb(monkeypatch):
     return FakeTmdb(monkeypatch)
 
 
-def login(client, username):
-    """Log in and return the headers that identify this user on later requests."""
-    client.post("/users/login", json={"username": username})
-    return {"X-User": username}
+def login(client, username, password="password123"):
+    """Register (or log in, if the name exists) and return headers carrying the session cookie.
+
+    The test client would also remember the cookie by itself; clearing that memory keeps
+    each request explicit, so a test can switch between users and also send none.
+    """
+    response = client.post("/users/register", json={"username": username, "password": password})
+    if response.status_code == 409:  # already exists: log in instead
+        response = client.post("/users/login", json={"username": username, "password": password})
+    token = response.cookies["session"]
+    client.cookies.clear()
+    return {"Cookie": f"session={token}"}
