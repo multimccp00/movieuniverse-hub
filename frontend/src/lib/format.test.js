@@ -1,5 +1,11 @@
 import { expect, test } from 'vitest'
-import { formatRuntime, formatVotes } from './format.js'
+import { formatRuntime, formatScore, formatVotes } from './format.js'
+
+test('formatScore', () => {
+  expect(formatScore(7.625)).toBe('7.63')
+  expect(formatScore(8)).toBe('8.00')
+  expect(formatScore(null)).toBe('No score')
+})
 
 test('formatVotes', () => {
   expect(formatVotes(7.8, 12340)).toBe('7.8 · 12,340 votes')

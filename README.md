@@ -2,7 +2,10 @@
 
 Search movies from TMDB, build playlists, rate movies and compare playlists using a combined score.
 
-> Work in progress. Full install, seed, test and cache docs come in later phases.
+What you can do:
+- Search movies and open a movie page: synopsis, genres, runtime, poster, TMDB score with its vote count, and the **combined score** (TMDB + this app's votes, weighted by vote count; rule in `DECISIONS.md` section 12).
+- Log in, build playlists with the ★ on any movie, rate movies 1–10.
+- **Compare** two playlists (anyone's): which has the better average combined score, and the movies they share.
 
 ## Run (Docker)
 

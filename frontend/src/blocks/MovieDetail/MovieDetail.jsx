@@ -1,9 +1,10 @@
-// Full movie information: poster, title, year, genres, runtime, TMDB score, synopsis.
+// Full movie information: poster, title, year, genres, runtime, TMDB score next to the
+// combined score, synopsis. `combined` is optional (it arrives separately, from useRatings).
 import { formatRuntime } from '../../lib/format.js'
 import ScoreBadge from '../ScoreBadge/ScoreBadge.jsx'
 import './MovieDetail.css'
 
-export default function MovieDetail({ movie }) {
+export default function MovieDetail({ movie, combined }) {
   const runtime = formatRuntime(movie.runtime)
 
   return (
@@ -24,7 +25,18 @@ export default function MovieDetail({ movie }) {
           {runtime && ` · ${runtime}`}
         </p>
 
-        <ScoreBadge label="TMDB" average={movie.vote_average} count={movie.vote_count} />
+        <div className="movie-detail__scores">
+          <ScoreBadge label="TMDB" average={movie.vote_average} count={movie.vote_count} />
+          {combined && (
+            <ScoreBadge
+              label="Combined"
+              average={combined.score}
+              count={combined.score === null ? 0 : combined.votes}
+              emptyText="Not enough information"
+            />
+          )}
+        </div>
+        {combined && <p className="muted movie-detail__explanation">{combined.explanation}</p>}
 
         <section className="stack">
           <h2>Synopsis</h2>

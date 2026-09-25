@@ -12,6 +12,7 @@ export default function Header() {
         <SearchBar />
         <nav className="header__nav">
           <Link to="/">Home</Link>
+          <Link to="/compare">Compare</Link>
           <UserMenu />
         </nav>
       </div>

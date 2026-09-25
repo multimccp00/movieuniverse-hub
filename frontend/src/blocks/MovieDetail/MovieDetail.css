@@ -13,6 +13,16 @@
   box-shadow: var(--shadow-md);
 }
 
+.movie-detail__scores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.movie-detail__explanation {
+  font-size: var(--text-sm);
+}
+
 .movie-detail__poster--empty {
   display: grid;
   place-items: center;

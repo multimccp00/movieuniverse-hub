@@ -11,6 +11,11 @@ MATRIX = {
     "genres": [{"id": 28, "name": "Action"}, {"id": 878, "name": "Science Fiction"}],
 }
 
+SMALL = {  # a well-rated movie with few votes
+    "id": 777, "title": "Small Gem", "release_date": "2020-01-01", "poster_path": None,
+    "vote_average": 9.0, "vote_count": 10, "overview": "", "runtime": 90, "genres": [],
+}
+
 UNRELEASED = {  # a movie with no votes, no date, no poster
     "id": 999, "title": "Unreleased", "release_date": "", "poster_path": None,
     "vote_average": 0, "vote_count": 0, "overview": "", "runtime": 0, "genres": [],
@@ -36,7 +41,7 @@ class FakeTmdb:
             return httpx.Response(200, json={
                 "page": 1, "total_pages": 1, "total_results": 1, "results": [MATRIX],
             })
-        movies = {"/movie/603": MATRIX, "/movie/999": UNRELEASED}
+        movies = {"/movie/603": MATRIX, "/movie/777": SMALL, "/movie/999": UNRELEASED}
         if path in movies:
             return httpx.Response(200, json=movies[path])
         if self.any_movie and path.startswith("/movie/"):

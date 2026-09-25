@@ -20,7 +20,7 @@ def to_out(playlist: Playlist) -> PlaylistOut:
     )
 
 
-def _existing(db: Session, playlist_id: int) -> Playlist:
+def existing(db: Session, playlist_id: int) -> Playlist:
     """The playlist, or 404 if it doesn't exist."""
     playlist = db.get(Playlist, playlist_id)
     if playlist is None:
@@ -30,7 +30,7 @@ def _existing(db: Session, playlist_id: int) -> Playlist:
 
 def _owned(db: Session, user: User, playlist_id: int) -> Playlist:
     """The playlist, or 403 if it belongs to someone else."""
-    playlist = _existing(db, playlist_id)
+    playlist = existing(db, playlist_id)
     if playlist.user_id != user.id:
         raise HTTPException(status_code=403, detail="Not your playlist")
     return playlist
@@ -82,7 +82,7 @@ def _summary_or_placeholder(db: Session, tmdb_id: int) -> MovieSummary:
 
 
 def detail(db: Session, playlist_id: int) -> PlaylistDetail:
-    playlist = _existing(db, playlist_id)
+    playlist = existing(db, playlist_id)
     return PlaylistDetail(
         **to_out(playlist).model_dump(),
         movies=[_summary_or_placeholder(db, m.tmdb_id) for m in playlist.movies],
