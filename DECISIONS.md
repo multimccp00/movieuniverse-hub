@@ -110,6 +110,49 @@ Command: `python -m app.cli seed dados/seed_playlists.json`
 
 Also handled defensively (not present in the file): star values outside 1–10 are skipped with a warning; usernames are cleaned the same way as at login.
 
-## Still to write
-- Combined score rule (Phase 5)
-- The vote-count question from the brief
+## 12. Combined score
+
+**Code:** `backend/app/blocks/scoring/combined.py`, `combined_score(tmdb_avg, tmdb_votes, app_avg, app_votes)`. A pure function, as the brief requires: numbers in, a score and an explanation out, no database, network or interface. The movie page and the playlist comparison both call this one function (through `ratings.service.combined_for`, which only gathers the numbers), and a future game would too.
+
+### Why the number of votes matters
+An average says nothing about how much to trust it. A movie rated 8.9 by 12 people and one rated 8.4 by 30,000 people: the second is almost certainly the better-liked movie, because 12 votes can easily be 12 fans. A simple average of the two averages (TMDB's and the app's) would also be wrong: 3 app votes would count as much as 30,000 TMDB votes. So the rule has to weigh everything by the number of votes behind it.
+
+### The rule: a Bayesian average
+1. **Pool the votes.** Every vote counts once, whether it came from TMDB or from this app:
+   `pooled = (tmdb_avg × tmdb_votes + app_avg × app_votes) / total_votes`
+2. **Pull towards a prior.** Pretend every movie also received `PRIOR_VOTES = 1000` votes of `PRIOR_SCORE = 6.0`:
+   `score = (pooled × total_votes + 6.0 × 1000) / (total_votes + 1000)`
+
+With few real votes, the 1,000 imaginary ones dominate and the score stays near 6.0. With many real votes they stop mattering and the score becomes the real average. This is the idea IMDb uses for its Top 250.
+
+- **No votes at all** (none on TMDB, none in the app): no score. The movie page says "Not enough information".
+- **Result:** a score from 0 to 10 (it's an average of 0–10 values), rounded to 2 decimals, plus the total number of votes it's based on, shown on the movie page next to the TMDB score: "Combined 8.3 · 40,263 votes".
+
+### The brief's checks, with real numbers
+
+| Case | Combined |
+|---|---|
+| 8.9 with 12 votes | **6.03** |
+| 8.4 with 30,000 votes | **8.32** |
+| 8.9 with 12 votes + three app users giving 10 | **6.05** (still far below 8.32: the order doesn't change) |
+| no votes anywhere | no score, "Not enough information" |
+
+All four are automated tests (`backend/tests/test_scoring.py`).
+
+### Why these two constants
+- **`PRIOR_SCORE = 6.0`**: where a movie with no evidence starts. Slightly above the middle of the scale, because the average TMDB rating of movies people actually rate is around 6–6.5. Starting at 5 would unfairly punish every little-known movie; starting at 7 would reward them.
+- **`PRIOR_VOTES = 1000`**: how many real votes a movie needs before its own average counts as much as the prior. With 1,000 votes, a movie is halfway between 6.0 and its real average; with 30,000 it's at 97% of its real average. It's big enough that tens of votes (or three app users) can't push an obscure movie above a well-known one, and small enough that a movie with a few thousand votes is judged on its own merits.
+- **Trade-off:** good but little-known movies are pulled down. A movie at 7.8 with 500 votes gets 6.60. That's intended: the brief values confidence over a high average from few votes. Both constants are at the top of the file, so they're easy to tune.
+- **App votes count exactly like TMDB votes.** Giving them extra weight would let a handful of users overrule thousands of TMDB votes, which is what the brief forbids.
+
+## 13. Comparing playlists
+
+`GET /compare?a=1&b=2`, page `/compare`.
+
+- **Anyone's playlists can be compared**, including other users' (that's why playlists are viewable by everyone).
+- **The better playlist has the higher average combined score** of its movies, as the brief asks. It uses the same `combined_score` function as the movie page.
+- **Movies without a combined score are left out of the average** (no votes at all, or unavailable on TMDB): counting them as 0 would punish a playlist for containing a new movie. The page says "average of 4 of 5 movies" so it's visible.
+- **Tie** when both averages are equal (2 decimals). **No winner** when one playlist has no scored movie at all (e.g. empty): the page says why.
+- **Comparing a playlist with itself** is refused (422).
+- **Extra comparisons shown:** the movies in both playlists, how many movies each has, and every movie's combined score side by side.
+- Each distinct movie is scored once, even when it's in both playlists.

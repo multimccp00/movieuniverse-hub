@@ -1,4 +1,5 @@
-"""Rating logic."""
+"""Rating logic, and the bridge between stored votes and the pure combined-score function."""
+from dataclasses import asdict
 from datetime import datetime
 
 from sqlalchemy import func, select
@@ -6,7 +7,8 @@ from sqlalchemy.orm import Session
 
 from app.blocks.movies import service as movies
 from app.blocks.ratings.models import Rating
-from app.blocks.ratings.schemas import RatingSummary
+from app.blocks.ratings.schemas import CombinedOut, RatingSummary
+from app.blocks.scoring.combined import CombinedScore, combined_score
 from app.blocks.users.models import User
 
 
@@ -32,16 +34,28 @@ def app_stats(db: Session, tmdb_id: int) -> tuple[float | None, int]:
     return (float(average) if count else None), count
 
 
+def combined_for(db: Session, tmdb_id: int) -> CombinedScore:
+    """Gather one movie's numbers (TMDB's via the cache, the app's from the database)
+    and hand them to the pure scoring function. 404 if the movie doesn't exist."""
+    movie = movies.detail(db, tmdb_id)
+    app_average, app_count = app_stats(db, tmdb_id)
+    return combined_score(movie.vote_average, movie.vote_count, app_average, app_count)
+
+
 def summary(db: Session, user: User | None, tmdb_id: int) -> RatingSummary:
+    combined = combined_for(db, tmdb_id)  # first: 404 for a movie that doesn't exist
     mine = None
     if user is not None:
         mine = db.scalar(select(Rating.stars).where(Rating.user_id == user.id, Rating.tmdb_id == tmdb_id))
     average, count = app_stats(db, tmdb_id)
-    return RatingSummary(my_stars=mine, app_average=average, app_count=count)
+    return RatingSummary(
+        my_stars=mine, app_average=average, app_count=count,
+        combined=CombinedOut(**asdict(combined)),  # asdict: the dataclass as a dictionary
+    )
 
 
 def rate(db: Session, user: User, tmdb_id: int, stars: int) -> RatingSummary:
     movies.detail(db, tmdb_id)  # 404 if the movie doesn't exist on TMDB
     upsert(db, user.id, tmdb_id, stars)
     db.commit()
-    return summary(db, user, tmdb_id)
+    return summary(db, user, tmdb_id)  # includes the new combined score
