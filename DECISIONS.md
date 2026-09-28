@@ -9,7 +9,7 @@ Why the project is built the way it is. Each entry: what was chosen, what else w
 3. **The code is organised in self-contained "blocks"** (section 2), like WordPress: one folder per feature on the backend (table, JSON shapes, logic, endpoints) and one folder per UI piece on the frontend (component, CSS, test), with a single design-system stylesheet. This is what let password login replace name-only login by changing one function (section 7).
 
 ## Contents
-1. Stack · 2. Structure · 3. Running · 4. Tables · 5. Tests · 6. Proxy · 7. Login · 8. Cache · 9. Search and movie pages · 10. Playlists and ratings · 11. Seed import (and the problems in the seed data) · 12. Combined score (and why the number of votes matters) · 13. Comparing playlists · 14. The higher/lower game
+1. Stack · 2. Structure · 3. Running · 4. Tables · 5. Tests · 6. Proxy · 7. Login · 8. Cache · 9. Search and movie pages · 10. Playlists and ratings · 11. Seed import (and the problems in the seed data) · 12. Combined score (and why the number of votes matters) · 13. Comparing playlists · 14. The higher/lower game · 15. Cinematic redesign
 
 ## 1. Stack
 
@@ -135,7 +135,7 @@ An average says nothing about how much to trust it. A movie rated 8.9 by 12 peop
 With few real votes, the 1,000 imaginary ones dominate and the score stays near 6.0. With many real votes they stop mattering and the score becomes the real average. This is the idea IMDb uses for its Top 250.
 
 - **No votes at all** (none on TMDB, none in the app): no score. The movie page says "Not enough information".
-- **Result:** a score from 0 to 10 (it's an average of 0–10 values), rounded to 2 decimals, plus the total number of votes it's based on, shown on the movie page next to the TMDB score: "Combined 8.3 · 40,263 votes".
+- **Result:** a score from 0 to 10 (it's an average of 0–10 values), rounded to 2 decimals, plus the total number of votes it's based on, shown on the movie page next to the TMDB score: the amber combined score (e.g. 8.32) with "40,262 votes" under it.
 
 ### The brief's checks, with real numbers
 
@@ -171,3 +171,19 @@ All four are automated tests (`backend/tests/test_scoring.py`).
 The brief marks the game as optional. It was deliberately left out to finish the required parts well, and is the first item in `features.md`.
 
 What is already in place for it: the combined score is one pure function (`combined_score`), so the game would call it directly, as the brief requires ("the same function, not a copy"). The rules the brief asks to decide (minimum score gap for a pair, which low-vote movies to leave out, pairs from the whole catalog or only the user's playlists) are listed in `features.md` to be decided when it's built.
+
+## 15. Cinematic redesign
+
+A full visual redesign from a design handoff (dark "cinematic" look: movie backdrops, Barlow Condensed titles, the combined score always in amber). The features are the same; the layout and one flow changed.
+
+- **Logged-out users can browse.** Before, the home page was only a login form. Now anyone sees the home page, community playlists, search, movies and playlists. Signing in is a modal that opens when you try to save (★), rate, or click "Sign in", and after logging in it **finishes what you started** (opens the ★ picker, gives the rating). *Alternative:* keep the login wall. Rejected: it hid everything the app does behind a form.
+- **The modal is a native `<dialog>` opened with `showModal()`.** The browser then keeps focus inside, closes it with Esc, blocks the page behind, and returns focus to the button that opened it. *Alternative:* a hand-made overlay with a focus-trap library. Rejected: more code (or a dependency) for what the platform already does. Tests stub `showModal` because jsdom doesn't have it yet (`src/test-setup.js`).
+- **The user menu is a native `<details>`** (click or Enter opens it), for the same reason.
+- **Backend: three small additions, no new tables.**
+  - `backdrop_url` on every movie (TMDB already sends `backdrop_path`, and it was already in the cache). No backdrop: the poster is used, blurred.
+  - Playlist movies now include their **combined score**, so the playlist page and the home tiles can show it. The playlist's average is computed in the browser from those scores, so it updates at once when you un-star a movie on your own playlist.
+  - `GET /ratings/mine` (your ratings, best first), so the home page can show "You rated this 10" for your favourite movie that is in one of your playlists.
+  - Compare results include each movie's poster, for the poster strips.
+- **Compare picks by dropdown, no Compare button.** Each side's card holds its own dropdown; changing it updates the URL and the result. The result is only shown when it matches the two playlists in the URL (not the previous one while the new one loads).
+- **Colours in OKLCH, all as tokens in `style.css`.** Block CSS files only use tokens, as before. Semi-transparent variants (lines, fills, overlays) are tokens too, so there are no raw colours in blocks.
+- **Phones:** a bottom tab bar replaces the top navigation; movie and playlist pages get a round Back button over the backdrop; the sign-in modal becomes a bottom sheet; touch targets are at least 44px.

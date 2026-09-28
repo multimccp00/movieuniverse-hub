@@ -1,6 +1,6 @@
 # Test report
 
-Result of each test case, one sentence per case. Automated tests: **62 backend** (pytest) and **32 frontend** (Vitest), all passing. Run them with `docker compose exec api pytest` and `docker compose exec web npm test`.
+Result of each test case, one sentence per case. Automated tests: **63 backend** (pytest) and **42 frontend** (Vitest), all passing. Run them with `docker compose exec api pytest` and `docker compose exec web npm test`.
 
 ## Cases from the brief
 
@@ -9,8 +9,8 @@ Result of each test case, one sentence per case. Automated tests: **62 backend**
 | 1 | A movie with 8.9 and 12 votes must not end above one with 8.4 and 30,000 votes. | Passes: the first scores 6.03, the second 8.32 (`test_scoring.py::test_few_votes_cannot_beat_many_votes`). |
 | 2 | Three app users giving 10 must not change that order. | Passes: the first rises only to 6.05, still below 8.32 (`test_three_app_users_giving_10_do_not_change_the_order`). |
 | 3 | A movie with no TMDB votes and no app votes has no combined score and says there isn't enough information. | Passes: score is empty and the text starts with "Not enough information" (`test_no_votes_means_no_score`); checked on real data with "The Matrix 5" (0 votes). |
-| 4 | The TMDB score is always shown with its number of votes, and a movie without votes shows "no votes", never "0". | Passes: "8.2 · 26,000 votes" and "No votes" (`format.test.js`, `ScoreBadge.test.jsx`, `MovieCard.test.jsx`). |
-| 5 | The movie page shows the combined score next to the TMDB score and says how many votes it's based on. | Passes: "Combined 8.3 · 40,263 votes" next to "TMDB 8.4 · 40,259 votes" for Inception (`MovieDetail.test.jsx`, checked in the browser). |
+| 4 | The TMDB score is always shown with its number of votes, and a movie without votes shows "no votes", never "0". | Passes: search cards show "8.2 · 26,000 votes", the movie page shows "8.2" with "26,000 votes" under it (also on phones), and "No votes" when there are none (`format.test.js`, `ScoreBadge.test.jsx`, `MovieCard.test.jsx`). |
+| 5 | The movie page shows the combined score next to the TMDB score and says how many votes it's based on. | Passes: for Inception, the combined score 8.32 with "40,262 votes" under it, next to TMDB 8.4 with "40,259 votes" (`MovieDetail.test.jsx`, checked in the browser). |
 | 6 | The combined score isn't a simple average of the two averages. | Passes: every vote counts once, so 100 TMDB votes of 8 plus 100 app votes of 6 equal 200 votes of 7 (`test_every_vote_counts_once`). |
 | 7 | The seed import can run twice without duplicating data. | Passes: row counts and TMDB requests are identical after a second run (`test_seed.py::test_running_twice_does_not_duplicate`). |
 | 8 | Deleted playlists in the seed file are handled. | Passes: `pl-03` and `pl-07` (`"apagada": true`) are not imported (`test_deleted_playlists_are_not_imported`). |
