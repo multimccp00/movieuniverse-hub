@@ -4,19 +4,22 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.db import Base, engine
+from app.db import Base, SessionLocal, engine
 from app.blocks.compare.router import router as compare_router
 from app.blocks.movies.router import router as movies_router
 from app.blocks.playlists.router import router as playlists_router
 from app.blocks.ratings.router import router as ratings_router
+from app.blocks.tmdb import refresh
 from app.blocks.tmdb.client import TmdbError  # client.py also loads the cache table
 from app.blocks.users.router import router as users_router
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Runs once when the server starts: create any table that doesn't exist yet.
+    # Runs once when the server starts: create any table that doesn't exist yet,
+    # then start refreshing old cache entries whenever the app is idle.
     Base.metadata.create_all(engine)
+    refresh.start(SessionLocal)
     yield
 
 
@@ -29,6 +32,13 @@ app.include_router(movies_router)
 app.include_router(playlists_router)
 app.include_router(ratings_router)
 app.include_router(compare_router)
+
+
+@app.middleware("http")
+async def remember_activity(request: Request, call_next):
+    """Every request marks the app as "in use", which pauses the cache refresh."""
+    refresh.touch()
+    return await call_next(request)
 
 
 @app.exception_handler(TmdbError)

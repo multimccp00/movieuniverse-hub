@@ -1,6 +1,6 @@
 # Test report
 
-Result of each test case, one sentence per case. Automated tests: **63 backend** (pytest) and **42 frontend** (Vitest), all passing. Run them with `docker compose exec api pytest` and `docker compose exec web npm test`.
+Result of each test case, one sentence per case. Automated tests: **71 backend** (pytest) and **42 frontend** (Vitest), all passing. Run them with `docker compose exec api pytest` and `docker compose exec web npm test`.
 
 ## Cases from the brief
 
