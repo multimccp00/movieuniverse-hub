@@ -1,42 +1,148 @@
-.movie-detail {
+/* ---------- Hero: poster + title + scores, on the backdrop ---------- */
+.movie-detail__hero {
   display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: var(--space-6);
-  align-items: start;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: var(--space-7);
+  align-items: end;
+  padding-top: 120px;
 }
 
 .movie-detail__poster {
-  width: 100%;
+  display: grid;
+  place-items: center;
   aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-poster);
+}
+
+.movie-detail__poster img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+}
+
+.movie-detail__heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.movie-detail__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) 20px;
+  font-size: 17px;
+  color: var(--color-muted);
 }
 
 .movie-detail__scores {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-4);
+  align-items: flex-end;
+  gap: var(--space-5) 40px;
+  margin-top: var(--space-2);
+}
+
+.movie-detail__save {
+  margin-left: auto;
+}
+
+.movie-detail__star {
+  display: none;
+}
+
+/* ---------- Body: synopsis | your rating + playlists ---------- */
+.movie-detail__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 440px;
+  gap: var(--space-8);
+  margin-top: 56px;
+}
+
+.movie-detail__synopsis {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.movie-detail__overview {
+  font-size: var(--text-lg);
+  line-height: 1.55;
+  color: color-mix(in oklch, var(--color-text) 85%, transparent);
 }
 
 .movie-detail__explanation {
+  margin-top: var(--space-3);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-line);
   font-size: var(--text-sm);
-}
-
-.movie-detail__poster--empty {
-  display: grid;
-  place-items: center;
-  background: var(--color-surface-2);
   color: var(--color-muted);
 }
 
-/* Phones: poster above the text instead of beside it */
-@media (max-width: 640px) {
-  .movie-detail {
-    grid-template-columns: 1fr;
+.movie-detail__aside {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+@media (max-width: 1024px) {
+  .movie-detail__hero {
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: var(--space-6);
   }
 
-  .movie-detail__poster {
-    max-width: 200px;
+  .movie-detail__body {
+    grid-template-columns: 1fr;
+    gap: var(--space-7);
+  }
+}
+
+/* Phones: no poster, title over the backdrop, rating before the synopsis */
+@media (max-width: 640px) {
+  .movie-detail__hero {
+    display: block;
+    padding-top: 150px;
+  }
+
+  .movie-detail__poster,
+  .movie-detail__save {
+    display: none;
+  }
+
+  .movie-detail__heading {
+    gap: var(--space-3);
+  }
+
+  .movie-detail__meta {
+    font-size: var(--text-sm);
+  }
+
+  .movie-detail__scores {
+    gap: var(--space-5);
+    margin-top: 0;
+    padding: 14px 0;
+    border-block: 1px solid var(--color-line);
+  }
+
+  .movie-detail__star {
+    position: absolute; /* against .app: top right, level with the Back button */
+    top: var(--space-4);
+    right: var(--page-gutter);
+    z-index: 3;
+    display: block;
+  }
+
+  .movie-detail__body {
+    margin-top: var(--space-5);
+    gap: var(--space-6);
+  }
+
+  .movie-detail__aside {
+    order: -1;
+  }
+
+  .movie-detail__overview {
+    font-size: var(--text-md);
   }
 }

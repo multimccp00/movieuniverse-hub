@@ -1,21 +1,54 @@
 .movie-card {
-  position: relative; /* the ★ is placed relative to the card */
-  height: 100%;
+  position: relative; /* the ★ and the number are placed on the poster */
 }
 
 .movie-card__link {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  gap: var(--space-2);
+}
+
+.movie-card__poster {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 2 / 3; /* movie poster shape, keeps the grid even while images load */
   overflow: hidden; /* clips the poster to the rounded corners */
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
 }
 
-.movie-card__link:hover {
-  border-color: var(--color-accent);
-  color: inherit;
+.movie-card__poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.movie-card__no-poster {
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+}
+
+.movie-card__title {
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.movie-card__link:hover .movie-card__title {
+  color: var(--color-accent);
+}
+
+.movie-card__facts {
+  display: flex;
+  flex-wrap: wrap; /* narrow cards: the score and its votes go under the year */
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0 var(--space-2);
+  margin-top: -2px;
+  font-size: var(--text-xs);
+  color: var(--color-text);
+}
+
+.movie-card__combined {
+  font-size: 18px;
 }
 
 .movie-card__star {
@@ -24,27 +57,78 @@
   right: var(--space-2);
 }
 
-.movie-card__poster {
-  width: 100%;
-  aspect-ratio: 2 / 3; /* movie poster shape, keeps the grid even while images load */
-  object-fit: cover;
+.movie-card__position {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  padding: 3px 7px;
+  border-radius: var(--radius-sm);
+  background: var(--color-scrim);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  pointer-events: none;
 }
 
-.movie-card__poster--empty {
-  display: grid;
-  place-items: center;
-  background: var(--color-surface-2);
-  color: var(--color-muted);
+/* Playlist page: bigger title */
+.movie-card--ranked .movie-card__title {
+  font-size: var(--text-md);
+}
+
+.movie-card--ranked .movie-card__facts {
   font-size: var(--text-sm);
 }
 
-.movie-card__body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-3);
-}
+/* Playlist page on phones: a row with a small poster, title/year, score on the right */
+@media (max-width: 640px) {
+  .movie-card--ranked .movie-card__link {
+    display: grid;
+    grid-template-columns: 40px 1fr auto;
+    grid-template-areas:
+      "poster title score"
+      "poster year  score";
+    align-items: center;
+    column-gap: 14px;
+    row-gap: 0;
+    padding: var(--space-2) 0;
+    border-bottom: 1px solid var(--color-line-soft);
+  }
 
-.movie-card__title {
-  font-size: var(--text-md);
+  .movie-card--ranked .movie-card__poster {
+    grid-area: poster;
+    width: 40px;
+    border-radius: var(--radius-sm);
+  }
+
+  .movie-card--ranked .movie-card__no-poster {
+    display: none;
+  }
+
+  .movie-card--ranked .movie-card__title {
+    grid-area: title;
+    align-self: end;
+  }
+
+  /* The year and the score become cells of the row's grid */
+  .movie-card--ranked .movie-card__facts {
+    display: contents;
+  }
+
+  .movie-card--ranked .movie-card__facts > :first-child {
+    grid-area: year;
+    align-self: start;
+    font-size: var(--text-xs);
+  }
+
+  .movie-card--ranked .movie-card__facts > :last-child {
+    grid-area: score;
+  }
+
+  .movie-card--ranked .movie-card__combined {
+    font-size: 20px;
+  }
+
+  .movie-card--ranked .movie-card__position,
+  .movie-card--ranked .movie-card__star {
+    display: none;
+  }
 }

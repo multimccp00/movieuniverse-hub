@@ -1,24 +1,52 @@
 /* ==========================================================================
-   DESIGN SYSTEM
+   DESIGN SYSTEM ("Cinematic")
    Global tokens + base styles only. Block-specific styles live next to each
    block (e.g. blocks/Header/Header.css) and must use these tokens.
    ========================================================================== */
 
 /* ---------- Tokens: change a value here, it changes everywhere ---------- */
 :root {
-  /* Colors */
-  --color-bg: #0f1115;
-  --color-surface: #181b22;
-  --color-surface-2: #222631;
-  --color-border: #2e3340;
-  --color-text: #e8eaf0;
-  --color-muted: #9aa1b2;
-  --color-accent: #f5c518;      /* star / highlight yellow */
-  --color-accent-text: #111;    /* text on top of accent */
-  --color-danger: #e5484d;
-  --color-success: #3fb950;
+  /* Colors (OKLCH; the hex is a close equivalent) */
+  --color-bg:        oklch(0.15 0.008 60);        /* ~#15120f  page */
+  --color-bg-deep:   oklch(0.12 0.005 60);        /* ~#0e0c0a  inputs, formula box */
+  --color-surface:   oklch(0.20 0.01 60);         /* ~#1f1b17  cards, modal, compare sides */
+  --color-surface-2: oklch(0.22 0.012 60);        /* ~#241f1a  popover */
+  --color-text:      oklch(0.95 0.008 80);        /* ~#f3efe8 */
+  --color-muted:     oklch(0.95 0.008 80 / 0.62); /* secondary text */
+  --color-line:      oklch(0.95 0.008 80 / 0.12); /* borders */
+  --color-line-soft: oklch(0.95 0.008 80 / 0.08); /* list row dividers */
+  --color-line-strong: oklch(0.95 0.008 80 / 0.25); /* outline buttons, dashed tiles */
+  --color-fill:      oklch(0.95 0.008 80 / 0.07); /* segmented control, subtle fills */
+  --color-glass:     oklch(0.95 0.008 80 / 0.1);  /* search pill on top of images */
+  --color-scrim:     oklch(0.12 0.005 60 / 0.75); /* round buttons and badges on posters */
+  --color-overlay:   oklch(0.15 0.008 60 / 0.62); /* behind the sign-in modal */
+  --color-tabbar:    oklch(0.13 0.006 60 / 0.95); /* mobile bottom bar */
+  --color-accent:    oklch(0.80 0.14 75);         /* ~#e9b04a  amber: combined score, primary */
+  --color-accent-soft: oklch(0.80 0.14 75 / 0.14);
+  --color-accent-line: oklch(0.80 0.14 75 / 0.5);
+  --color-accent-glow: oklch(0.80 0.14 75 / 0.18);
+  --color-accent-text: oklch(0.18 0.02 60);       /* text on amber */
+  --color-danger:    oklch(0.80 0.12 25);         /* ~#f0908a  delete, errors (on dark) */
+  --color-danger-line: oklch(0.80 0.12 25 / 0.5);
+  --color-danger-bg: oklch(0.62 0.19 25 / 0.16);
+  --color-placeholder-a: oklch(0.30 0.02 60);     /* image loading bg */
+  --color-placeholder-b: oklch(0.25 0.02 60);
 
-  /* Spacing scale (4px steps) */
+  /* Type */
+  --font-display: "Barlow Condensed", sans-serif; /* titles, all scores, section labels (uppercase) */
+  --font-body:    "Barlow", sans-serif;
+  --font-mono:    "IBM Plex Mono", monospace;     /* eyebrows, badges, formula */
+  --text-xs: 13px;
+  --text-sm: 14px;
+  --text-md: 16px;
+  --text-lg: 19px;
+  --text-label: 24px;                             /* section labels */
+  --text-score-sm: 36px;
+  --text-title: clamp(34px, 5vw, 56px);           /* search title */
+  --text-score: clamp(48px, 6vw, 72px);           /* combined score on Movie and Playlist */
+  --text-hero: clamp(50px, 8vw, 100px);           /* hero titles: ~56px phone, ~100px desktop */
+
+  /* Spacing (4px steps) */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -26,22 +54,31 @@
   --space-5: 24px;
   --space-6: 32px;
   --space-7: 48px;
+  --space-8: 64px;
 
-  /* Typography */
-  --font-body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --text-sm: 0.875rem;
-  --text-md: 1rem;
-  --text-lg: 1.25rem;
-  --text-xl: 1.75rem;
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
 
-  /* Shape and depth */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --shadow-md: 0 4px 12px rgb(0 0 0 / 0.35);
+  /* Shadows */
+  --shadow-poster: 0 30px 60px rgb(0 0 0 / 0.5);
+  --shadow-pop:    0 24px 60px rgb(0 0 0 / 0.55);
+  --shadow-modal:  0 30px 80px rgb(0 0 0 / 0.5);
 
   /* Layout */
-  --container-width: 1200px;
+  --page-gutter: 48px;
+  --container-width: 1280px;
+  --tabbar-height: 0px; /* space the mobile tab bar takes at the bottom */
+}
+
+@media (max-width: 640px) {
+  :root {
+    --page-gutter: 20px;
+    --tabbar-height: 72px;
+  }
 }
 
 /* ---------- Reset ---------- */
@@ -76,8 +113,10 @@ body {
   line-height: 1.5;
 }
 
-h1 { font-size: var(--text-xl); }
-h2 { font-size: var(--text-lg); }
+h1, h2, h3 {
+  font-size: inherit;
+  font-weight: 600;
+}
 
 a {
   color: inherit;
@@ -88,6 +127,11 @@ a:hover {
   color: var(--color-accent);
 }
 
+input::placeholder {
+  color: inherit;
+  opacity: 0.5;
+}
+
 /* Visible keyboard focus for accessibility */
 :focus-visible {
   outline: 2px solid var(--color-accent);
@@ -95,14 +139,23 @@ a:hover {
 }
 
 /* ---------- Layout primitives ---------- */
+/* The whole app; heroes position their backdrop against it (under the header) */
+.app {
+  position: relative;
+  isolation: isolate; /* its own layer stack, so a backdrop at z-index -1 stays inside it */
+  min-height: 100vh;
+  padding-bottom: var(--tabbar-height);
+  overflow-x: clip; /* scaled/blurred backdrops must not cause sideways scroll */
+}
+
 .container {
   max-width: var(--container-width);
   margin-inline: auto;
-  padding-inline: var(--space-4);
+  padding-inline: var(--page-gutter);
 }
 
 main.container {
-  padding-block: var(--space-6);
+  padding-bottom: var(--space-8);
 }
 
 /* Vertical stack with even gaps between children */
@@ -112,29 +165,109 @@ main.container {
   gap: var(--space-4);
 }
 
-/* Responsive card grid: as many columns as fit, min 160px each */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+/* A page section under the hero: title row, then its content */
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: var(--space-8);
+}
+
+/* Section title on the left, a count or a link on the right */
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
   gap: var(--space-4);
+}
+
+.section-head > :last-child:not(:first-child) {
+  font-size: var(--text-sm);
+}
+
+.section-head a {
+  color: var(--color-accent);
+}
+
+/* A page title with a note next to it: “matrix”  58 results */
+.title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 18px;
+}
+
+/* ---------- Shared type ---------- */
+/* Title of a page without a hero (search results) */
+.page-title {
+  font-family: var(--font-display);
+  font-size: var(--text-title);
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: var(--text-hero);
+  font-weight: 700;
+  line-height: 0.9;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+/* "YOUR PLAYLISTS", "SYNOPSIS"... */
+.section-label {
+  font-family: var(--font-display);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+/* Small amber mono line above titles: "HI, ANA · YOU RATED THIS 10" */
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.08em;
+  color: var(--color-accent);
+  text-transform: uppercase;
+}
+
+/* The combined score: always amber, always display type */
+.combined {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---------- Shared components ---------- */
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface-2);
+  padding: var(--space-3) 22px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-pill);
+  background: var(--color-fill);
   color: var(--color-text);
   font: inherit;
+  font-weight: 600;
   cursor: pointer;
 }
 
 .btn:hover {
   border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
+.btn:disabled {
+  opacity: 0.35;
+  cursor: default;
 }
 
 .btn--primary {
@@ -143,16 +276,68 @@ main.container {
   color: var(--color-accent-text);
 }
 
-.input {
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--color-border);
+.btn--primary:hover {
+  color: var(--color-accent-text);
+}
+
+.btn--danger {
+  background: transparent;
+  border-color: var(--color-danger-line);
+  color: var(--color-danger);
+}
+
+.btn--danger:hover {
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+/* Small solid button next to an input ("Create") */
+.btn--small {
+  padding: 0 14px;
+  border: none;
   border-radius: var(--radius-md);
-  background: var(--color-surface);
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+.btn--small:hover {
+  color: var(--color-bg);
+}
+
+.input {
+  padding: 10px var(--space-3);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-deep);
   color: var(--color-text);
   font: inherit;
+}
+
+.input:focus {
+  border-color: var(--color-accent-line);
+}
+
+/* Poster / backdrop still loading (or missing): flat placeholder color */
+.placeholder {
+  background: var(--color-placeholder-a);
+}
+
+.error {
+  color: var(--color-danger);
+  font-size: var(--text-sm);
 }
 
 /* ---------- Utilities ---------- */
 .muted {
   color: var(--color-muted);
+}
+
+/* Hidden on screen, still read by screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

@@ -1,4 +1,5 @@
 // App shell: Header on every page, then the page that matches the URL.
+// .app is the box the page heroes place their backdrop in, right under the header.
 import { Routes, Route } from 'react-router-dom'
 import Header from './blocks/Header/Header.jsx'
 import HomePage from './pages/HomePage.jsx'
@@ -10,7 +11,7 @@ import AboutPage from './pages/AboutPage.jsx'
 
 export default function App() {
   return (
-    <>
+    <div className="app">
       <Header />
       <main className="container">
         <Routes>
@@ -23,6 +24,6 @@ export default function App() {
           <Route path="*" element={<p>Page not found.</p>} />
         </Routes>
       </main>
-    </>
+    </div>
   )
 }

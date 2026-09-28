@@ -9,7 +9,7 @@ function CurrentUrl() {
   return <p data-testid="url">{location.pathname + location.search}</p>
 }
 
-test('submitting goes to the search page with the trimmed query', () => {
+test('pressing Enter goes to the search page with the trimmed query', () => {
   render(
     <MemoryRouter>
       <SearchBar />
@@ -17,6 +17,6 @@ test('submitting goes to the search page with the trimmed query', () => {
     </MemoryRouter>,
   )
   fireEvent.change(screen.getByLabelText('Search movies'), { target: { value: '  the matrix ' } })
-  fireEvent.click(screen.getByRole('button', { name: 'Search' }))
+  fireEvent.submit(screen.getByRole('search')) // what Enter does in a one-field form
   expect(screen.getByTestId('url').textContent).toBe('/search?q=the%20matrix')
 })

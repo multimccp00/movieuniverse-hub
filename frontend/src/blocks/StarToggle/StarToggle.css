@@ -3,14 +3,9 @@
 }
 
 .star-toggle__button {
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--color-border);
-  border-radius: 50%;
-  background: var(--color-surface);
-  color: var(--color-muted);
-  font-size: var(--text-lg);
-  line-height: 1;
+  border: 1px solid var(--color-line-strong);
+  color: var(--color-text);
+  font: inherit;
   cursor: pointer;
 }
 
@@ -20,15 +15,68 @@
   border-color: var(--color-accent);
 }
 
+/* Round ★ on a poster */
+.star-toggle__button--icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-pill);
+  background: var(--color-scrim);
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* "★ In 2 playlists" on the movie page */
+.star-toggle__button--pill {
+  padding: 13px 22px;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.star-toggle__button--pill.star-toggle__button--on {
+  background: var(--color-accent-soft);
+}
+
 .star-toggle__popover {
   position: absolute;
   top: calc(100% + var(--space-2));
   right: 0;
   z-index: 10; /* above the neighbouring cards */
-  width: 240px;
-  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 272px;
+  padding: var(--space-4);
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
   background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-pop);
+  color: var(--color-text);
+  text-align: left;
+}
+
+.star-toggle__popover--left {
+  right: auto;
+  left: 0;
+}
+
+.star-toggle__title {
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+}
+
+.star-toggle__title strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .star-toggle__button--icon {
+    width: 44px;
+    height: 44px;
+    font-size: var(--text-lg);
+  }
 }

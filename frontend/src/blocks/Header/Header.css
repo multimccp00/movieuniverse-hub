@@ -1,26 +1,159 @@
-/* Header block. Only uses tokens from style.css, never raw colors/sizes. */
+/* Header block. Only uses tokens from style.css, never raw colors. */
 .header {
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.header__inner {
+  position: relative; /* above the page's backdrop */
+  z-index: 2;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap; /* small screens: search drops to its own line */
-  gap: var(--space-3) var(--space-5);
-  padding-block: var(--space-3);
+  gap: 40px;
+  max-width: var(--container-width);
+  margin-inline: auto;
+  padding: var(--space-5) var(--page-gutter);
+}
+
+/* Pages without a hero: a thin line under the header */
+.header--solid {
+  max-width: none;
+  margin-bottom: 40px;
+  border-bottom: 1px solid var(--color-line-soft);
+  padding-inline: max(var(--page-gutter), (100% - var(--container-width)) / 2 + var(--page-gutter));
+}
+
+.header__back {
+  display: none;
 }
 
 .header__brand {
-  font-size: var(--text-lg);
+  font-family: var(--font-display);
+  font-size: 26px;
   font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.header__hub {
   color: var(--color-accent);
 }
 
 .header__nav {
   display: flex;
-  align-items: center;
-  gap: var(--space-4);
+  gap: 28px;
+  font-weight: 500;
+}
+
+.header__nav a {
+  opacity: 0.7;
+}
+
+.header__nav a.active,
+.header__nav a:hover {
+  opacity: 1;
+}
+
+.header__search {
+  margin-left: auto;
+  width: 320px;
+}
+
+/* ---------- Mobile tab bar (hidden on bigger screens) ---------- */
+.tabbar {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .header {
+    gap: var(--space-5);
+  }
+
+  .header__search {
+    width: 220px;
+  }
+}
+
+@media (max-width: 640px) {
+  .header {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-top: var(--space-4);
+  }
+
+  .header--solid {
+    margin-bottom: var(--space-5);
+    border-bottom: none;
+  }
+
+  .header__brand {
+    font-size: 22px;
+  }
+
+  .header__nav,
+  .header__search {
+    display: none;
+  }
+
+  /* Search page: the search pill gets its own full-width row */
+  .header--search .header__search {
+    display: block;
+    order: 1;
+    width: 100%;
+  }
+
+  /* Movie and playlist pages: only a round Back button over the backdrop */
+  .header--detail .header__brand,
+  .header--detail .header__user {
+    display: none;
+  }
+
+  .header--detail .header__back {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: none;
+    border-radius: var(--radius-pill);
+    background: var(--color-scrim);
+    color: var(--color-text);
+    font: inherit;
+    font-size: var(--text-lg);
+    cursor: pointer;
+  }
+
+  .tabbar {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 5;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 6px var(--space-2) max(var(--space-3), env(safe-area-inset-bottom));
+    background: var(--color-tabbar);
+    border-top: 1px solid var(--color-line);
+    backdrop-filter: blur(12px);
+    font-size: var(--text-xs);
+    font-weight: 500;
+  }
+
+  .tabbar__link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-1);
+    min-height: 48px;
+    opacity: 0.65;
+  }
+
+  /* Active tab: amber, with a small dot above the label */
+  .tabbar__link.active {
+    color: var(--color-accent);
+    opacity: 1;
+  }
+
+  .tabbar__link.active::before {
+    content: "";
+    width: 5px;
+    height: 5px;
+    border-radius: var(--radius-pill);
+    background: currentColor;
+  }
 }
