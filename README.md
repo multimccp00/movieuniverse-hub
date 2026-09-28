@@ -88,7 +88,7 @@ docker compose exec api pytest
 docker compose exec web npm test
 ```
 
-- **Backend:** 63 tests (pytest). Each test uses a fresh in-memory database and a fake TMDB, so they never touch your data or the internet.
+- **Backend:** 71 tests (pytest). Each test uses a fresh in-memory database and a fake TMDB, so they never touch your data or the internet.
 - **Frontend:** 42 tests (Vitest + Testing Library), one file per block.
 
 ### Test cases
@@ -117,7 +117,7 @@ Every movie gets one score from 0 to 10 that mixes TMDB's votes and this app's v
 
 ### Cache
 
-Every TMDB request goes through one function (`backend/app/blocks/tmdb/client.py`, `get()`), which stores TMDB's answer in the MySQL table `tmdb_cache` and reuses it next time. The same request is never sent to TMDB twice, including after a restart. Searches are normalized (case, spaces), so different spellings of the same search share one entry. Errors are not cached. Requests that do reach TMDB are throttled to 40 per 10 seconds, and a "too many requests" answer is retried once. The example import pre-loads its 30 movies. Details and trade-offs: `DECISIONS.md`, section 8.
+Every TMDB request goes through one function (`backend/app/blocks/tmdb/client.py`, `get()`), which stores TMDB's answer in the MySQL table `tmdb_cache` and reuses it next time. The same request is never sent to TMDB twice, including after a restart. Searches are normalized (case, spaces), so different spellings of the same search share one entry. Errors are not cached. Requests that do reach TMDB are throttled to 40 per 10 seconds, and a "too many requests" answer is retried once. So vote counts don't freeze, entries older than 7 days are re-fetched in the background, only while nobody is using the app (no request for 5 minutes); users are always answered from the cache. The example import pre-loads its 30 movies. Details and trade-offs: `DECISIONS.md`, section 8.
 
 ### Project layout
 
@@ -141,7 +141,7 @@ dados/                   the example data file
 | `DECISIONS.md` | The three main decisions, every design choice with its alternatives, the combined score rule, the problems in the seed data, why the number of votes matters, the stack justification |
 | `RELATORIO.md` | Test cases and their results |
 | `AI_LOG.md` | Situations where the AI was wrong or overruled, and what was done instead |
-| `features.md` | Ideas left for later (the higher/lower game, watch status, TV shows, cache refresh) |
+| `features.md` | Ideas left for later (the higher/lower game, watch status, TV shows, more TMDB data) |
 
 ## 9. Attribution
 
