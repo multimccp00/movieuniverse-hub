@@ -1,8 +1,140 @@
 .about {
-  max-width: 720px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 72px;
+  padding-top: var(--space-6);
+}
+
+.about__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.about__headline {
+  font-family: var(--font-display);
+  font-size: clamp(50px, 7vw, 80px);
+  font-weight: 700;
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+
+.about__text {
+  font-size: var(--text-lg);
+  line-height: 1.55;
+  color: color-mix(in oklch, var(--color-text) 85%, transparent);
+}
+
+.about__explain {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-top: 40px;
+}
+
+.about__formula {
+  padding: 18px 20px;
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-deep);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+.about__formula-under {
+  padding-left: 98px; /* lines "÷" up under the opening bracket */
+  white-space: nowrap;
+}
+
+.about__example {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: 22px;
+  border: 1px solid var(--color-line);
+  border-radius: 16px;
+  background: var(--color-surface);
+}
+
+.about__example-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-4);
+  font-size: 17px;
+}
+
+.about__example-head strong {
+  font-weight: 600;
+}
+
+.about__example-score {
+  font-size: 44px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.about__bar {
+  display: flex;
+  height: 10px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--color-line-soft);
+}
+
+.about__bar-prior {
+  background: color-mix(in oklch, var(--color-text) 28%, transparent);
+}
+
+.about__bar-real {
+  flex: 1;
+  background: var(--color-accent);
+}
+
+.about__bar-legend {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  font-size: var(--text-xs);
+}
+
+.about__attribution {
+  margin-top: var(--space-3);
+  font-size: var(--text-sm);
 }
 
 .about__attribution a {
   color: var(--color-accent);
   text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .about {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    padding-top: 0;
+  }
+
+  .about__explain {
+    padding-top: 0;
+  }
+
+  .about__text {
+    font-size: var(--text-md);
+  }
+}
+
+@media (max-width: 640px) {
+  .about__formula-under {
+    padding-left: 0;
+  }
+
+  .about__example {
+    padding: var(--space-4);
+  }
+
+  .about__example-score {
+    font-size: var(--text-score-sm);
+  }
 }

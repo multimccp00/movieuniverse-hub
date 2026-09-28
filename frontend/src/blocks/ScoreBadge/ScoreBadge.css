@@ -1,14 +1,59 @@
 .score-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
 }
 
 .score-badge__label {
-  padding: 0 var(--space-2);
-  border-radius: var(--radius-sm);
-  background: var(--color-accent);
-  color: var(--color-accent-text);
-  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.score-badge__value {
+  font-family: var(--font-display);
+  font-size: var(--text-score-sm);
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.score-badge__count {
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+}
+
+.score-badge__empty {
+  font-family: var(--font-display);
+  font-size: var(--text-label);
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+/* The combined score: always amber, in display type */
+.score-badge--accent {
+  gap: 2px;
+}
+
+.score-badge--accent .score-badge__label,
+.score-badge--accent .score-badge__value,
+.score-badge--accent .score-badge__empty {
+  color: var(--color-accent);
+}
+
+.score-badge--accent .score-badge__value {
+  font-size: var(--text-score);
+  line-height: 0.9;
+}
+
+@media (max-width: 640px) {
+  .score-badge__value {
+    font-size: 26px;
+  }
+
+  .score-badge__count {
+    font-size: 12px;
+  }
 }

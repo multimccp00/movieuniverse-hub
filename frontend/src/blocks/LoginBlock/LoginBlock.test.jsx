@@ -34,9 +34,17 @@ test('logs in with username and password', async () => {
 test('can switch to creating an account', async () => {
   fakeFetch(201, { id: 2, username: 'ana' })
   render(<UserProvider><LoginBlock /></UserProvider>)
-  fireEvent.click(screen.getByRole('button', { name: 'No account? Create one' }))
+  fireEvent.click(screen.getByRole('radio', { name: 'Create account' }))
+  expect(screen.getByText('8 to 128 characters.')).toBeTruthy()
   fillAndSubmit('Create account')
   await vi.waitFor(() => expect(fetch).toHaveBeenLastCalledWith('/api/users/register', expect.anything()))
+})
+
+test('a demo chip fills the username', () => {
+  fakeFetch(200, {})
+  render(<UserProvider><LoginBlock /></UserProvider>)
+  fireEvent.click(screen.getByRole('button', { name: 'bruno' }))
+  expect(screen.getByLabelText('Username').value).toBe('bruno')
 })
 
 test('shows the error from the backend', async () => {

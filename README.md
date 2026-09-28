@@ -61,7 +61,7 @@ To stop: `Ctrl+C`, or `docker compose down`. Data is kept between runs. To delet
 ## 4. Logging in
 
 - Example users: **ana**, **bruno**, **carla**, all with the password **`demo1234`**.
-- Or create your own account from the login form ("No account? Create one"). Passwords need 8 to 128 characters.
+- Or create your own account: "Sign in" (top right), then "Create account". Passwords need 8 to 128 characters.
 
 Passwords are stored hashed with Argon2, and the login is kept in an `HttpOnly` cookie (`DECISIONS.md`, section 7).
 
@@ -88,8 +88,8 @@ docker compose exec api pytest
 docker compose exec web npm test
 ```
 
-- **Backend:** 62 tests (pytest). Each test uses a fresh in-memory database and a fake TMDB, so they never touch your data or the internet.
-- **Frontend:** 32 tests (Vitest + Testing Library), one file per block.
+- **Backend:** 63 tests (pytest). Each test uses a fresh in-memory database and a fake TMDB, so they never touch your data or the internet.
+- **Frontend:** 42 tests (Vitest + Testing Library), one file per block.
 
 ### Test cases
 

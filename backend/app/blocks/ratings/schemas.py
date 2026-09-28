@@ -7,6 +7,12 @@ class RatingIn(BaseModel):
     stars: int = Field(ge=1, le=10)  # 422 if outside 1..10
 
 
+class MyRating(BaseModel):
+    """One of the logged-in user's ratings (GET /ratings/mine)."""
+    tmdb_id: int
+    stars: int
+
+
 class CombinedOut(BaseModel):
     """The combined score (TMDB + app votes). score None = not enough information."""
     score: float | None

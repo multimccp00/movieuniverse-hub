@@ -1,24 +1,112 @@
+/* One grid for the tiles and the extra tile after them (the <ul> "disappears" into it) */
 .playlist-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
 }
 
-.playlist-list__item {
+.playlist-list__tiles {
+  display: contents;
+}
+
+.playlist-tile {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  gap: 10px;
+}
+
+.playlist-tile__mosaic {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3px;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.playlist-tile__cell img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.playlist-tile__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.playlist-tile__name {
+  font-weight: 600;
+}
+
+.playlist-tile:hover .playlist-tile__name {
+  color: var(--color-accent);
+}
+
+.playlist-tile__average {
+  font-size: var(--text-lg);
+}
+
+.playlist-tile__meta {
+  margin-top: -6px;
+  font-size: var(--text-sm);
+}
+
+.playlist-tile:hover .playlist-tile__meta {
+  color: var(--color-muted);
+}
+
+/* Other people's playlists: smaller */
+.playlist-list--compact .playlist-tile__mosaic {
+  height: 96px;
   border-radius: var(--radius-md);
 }
 
-.playlist-list__item:hover {
-  border-color: var(--color-accent);
-  color: inherit;
+.playlist-list--compact .playlist-tile__name {
+  font-size: 15px;
 }
 
-.playlist-list__name {
-  font-weight: 600;
+.playlist-list--compact .playlist-tile__average {
+  font-size: 17px;
+}
+
+.playlist-list--compact .playlist-tile__meta {
+  font-size: var(--text-xs);
+}
+
+@media (max-width: 640px) {
+  .playlist-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 14px;
+  }
+
+  /* One row of 200px cards you swipe sideways; the extra tile goes under it */
+  .playlist-list--scroll {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .playlist-list--scroll .playlist-list__tiles {
+    display: flex;
+    gap: 14px;
+    margin-inline: calc(-1 * var(--page-gutter));
+    padding-inline: var(--page-gutter);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--page-gutter); /* snap tiles to the gutter, not the screen edge */
+    scrollbar-width: none;
+  }
+
+  .playlist-list--scroll .playlist-list__tiles > li {
+    flex: none;
+    width: 200px;
+    scroll-snap-align: start;
+  }
+
+  .playlist-list--scroll .playlist-tile__mosaic {
+    height: 110px;
+    gap: 2px;
+    border-radius: var(--radius-md);
+  }
 }

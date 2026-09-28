@@ -17,11 +17,13 @@ export default function SearchPage() {
   if (error) return <p role="alert">Search failed: {error.message}</p>
   if (!data) return <p className="muted">Searching…</p>
 
+  const total = data.total_results
   return (
     <section className="stack" aria-busy={loading}>
-      <h1>
-        {data.total_results.toLocaleString('en-US')} results for “{q}”
-      </h1>
+      <div className="title-row">
+        <h1 className="page-title">“{q}”</h1>
+        <p className="muted">{total.toLocaleString('en-US')} {total === 1 ? 'result' : 'results'}</p>
+      </div>
       <MovieGrid movies={data.results} />
       <Pager
         page={data.page}

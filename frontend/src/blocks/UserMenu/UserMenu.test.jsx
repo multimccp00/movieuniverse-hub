@@ -1,22 +1,19 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { fireEvent, screen } from '@testing-library/react'
 import { expect, test, vi } from 'vitest'
-import { UserContext } from '../../context/UserContext.jsx'
+import { renderWithContext } from '../../test-utils.jsx'
 import UserMenu from './UserMenu.jsx'
 
-// Give the block a fake context instead of the real provider
-function renderWith(value) {
-  return render(<UserContext.Provider value={value}><UserMenu /></UserContext.Provider>)
-}
-
-test('shows username and logs out on click', () => {
+test('shows username and logs out from the menu', () => {
   const logout = vi.fn()
-  renderWith({ user: { id: 1, username: 'ana' }, logout })
+  renderWithContext(<UserMenu />, { user: { id: 1, username: 'ana' }, logout })
   expect(screen.getByText('ana')).toBeTruthy()
+  fireEvent.click(screen.getByText('ana')) // opens the menu
   fireEvent.click(screen.getByRole('button', { name: 'Log out' }))
   expect(logout).toHaveBeenCalled()
 })
 
-test('renders nothing when logged out', () => {
-  const { container } = renderWith({ user: null, logout: vi.fn() })
-  expect(container.innerHTML).toBe('')
+test('logged out: a Sign in button that opens the sign-in modal', () => {
+  const { auth } = renderWithContext(<UserMenu />)
+  fireEvent.click(screen.getByRole('button', { name: 'Sign in' }))
+  expect(auth.open).toHaveBeenCalled()
 })

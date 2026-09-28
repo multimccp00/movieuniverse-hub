@@ -1,35 +1,65 @@
-.user-rating__mine {
-  gap: var(--space-2);
+.user-rating {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
 .user-rating__buttons {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
   gap: var(--space-1);
 }
 
 .user-rating__button {
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--color-border);
+  height: 44px;
+  border: 1px solid var(--color-line);
   border-radius: var(--radius-sm);
-  background: var(--color-surface);
+  background: var(--color-fill);
   color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.user-rating__button:hover {
+  border-color: var(--color-accent);
+}
+
+.user-rating__button--below {
+  border-color: var(--color-accent-line);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.user-rating__button--on {
+  border-color: var(--color-accent-line);
+  background: var(--color-accent);
+  color: var(--color-accent-text);
+}
+
+.user-rating__signin {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--color-accent);
   font: inherit;
   cursor: pointer;
 }
 
-.user-rating__button:hover,
-.user-rating__button--on {
-  border-color: var(--color-accent);
+.user-rating__signin:hover {
+  text-decoration: underline;
 }
 
-.user-rating__button--on {
-  background: var(--color-accent);
-  color: var(--color-accent-text);
-  font-weight: 700;
-}
+/* Phones: two rows of five, easier to tap */
+@media (max-width: 640px) {
+  .user-rating__buttons {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 6px;
+  }
 
-.user-rating__error {
-  color: var(--color-danger);
+  .user-rating__button {
+    height: 46px;
+    border-radius: var(--radius-md);
+  }
 }

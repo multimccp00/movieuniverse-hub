@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useApi } from '../lib/useApi.js'
 import { useUser } from '../context/UserContext.jsx'
 import { usePlaylists } from '../context/PlaylistsContext.jsx'
+import PlaylistHero from '../blocks/PlaylistHero/PlaylistHero.jsx'
 import MovieGrid from '../blocks/MovieGrid/MovieGrid.jsx'
 
 export default function PlaylistPage() {
@@ -27,15 +28,9 @@ export default function PlaylistPage() {
   }
 
   return (
-    <section className="stack">
-      <h1>{data.name}</h1>
-      <p className="muted">
-        by {data.owner} · {movies.length} {movies.length === 1 ? 'movie' : 'movies'}
-      </p>
-      <MovieGrid movies={movies} emptyText="This playlist is empty. Use ☆ on any movie to add it." />
-      {user?.username === data.owner && (
-        <p><button className="btn" onClick={handleDelete}>Delete playlist</button></p>
-      )}
-    </section>
+    <>
+      <PlaylistHero playlist={data} movies={movies} isOwner={user?.username === data.owner} onDelete={handleDelete} />
+      <MovieGrid movies={movies} ranked emptyText="This playlist is empty. Use ☆ on any movie to add it." />
+    </>
   )
 }

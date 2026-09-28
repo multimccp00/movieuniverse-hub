@@ -18,5 +18,6 @@ export default defineConfig({
   test: {
     environment: 'jsdom', // fake browser so components can render in tests
     globals: true, // lets Testing Library clean up the page between tests automatically
+    setupFiles: './src/test-setup.js',
   },
 })

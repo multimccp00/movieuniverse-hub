@@ -8,6 +8,7 @@ class MovieSummary(BaseModel):
     title: str
     year: int | None  # None when TMDB has no release date
     poster_url: str | None
+    backdrop_url: str | None
     vote_average: float
     vote_count: int
 

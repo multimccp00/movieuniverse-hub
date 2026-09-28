@@ -54,6 +54,13 @@ def summary(db: Session, user: User | None, tmdb_id: int) -> RatingSummary:
     )
 
 
+def mine(db: Session, user: User) -> list[Rating]:
+    """The user's ratings, best first (the home page shows their favourite)."""
+    return list(db.scalars(
+        select(Rating).where(Rating.user_id == user.id).order_by(Rating.stars.desc(), Rating.rated_at.desc())
+    ))
+
+
 def rate(db: Session, user: User, tmdb_id: int, stars: int) -> RatingSummary:
     movies.detail(db, tmdb_id)  # 404 if the movie doesn't exist on TMDB
     upsert(db, user.id, tmdb_id, stars)

@@ -6,7 +6,7 @@ from app.blocks.tmdb.throttle import SlidingWindow
 
 MATRIX = {
     "id": 603, "title": "The Matrix", "release_date": "1999-03-30",
-    "poster_path": "/matrix.jpg", "vote_average": 8.2, "vote_count": 26000,
+    "poster_path": "/matrix.jpg", "backdrop_path": "/matrix-wide.jpg", "vote_average": 8.2, "vote_count": 26000,
     "overview": "A hacker learns the truth.", "runtime": 136,
     "genres": [{"id": 28, "name": "Action"}, {"id": 878, "name": "Science Fiction"}],
 }

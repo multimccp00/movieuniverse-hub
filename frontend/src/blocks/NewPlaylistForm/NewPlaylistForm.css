@@ -11,6 +11,45 @@
 
 .new-playlist__error {
   width: 100%;
-  color: var(--color-danger);
-  font-size: var(--text-sm);
+}
+
+/* Home page: dashed tile, same height as a poster mosaic */
+.new-playlist-tile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 150px;
+  padding: 18px;
+  border: 1px dashed var(--color-line-strong);
+  border-radius: 12px;
+}
+
+.new-playlist-tile__title {
+  font-weight: 600;
+}
+
+.new-playlist-tile__hint {
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+}
+
+/* Phones: just the field, under the row of playlists */
+@media (max-width: 640px) {
+  .new-playlist-tile {
+    min-height: 0;
+    padding: 0;
+    border: none;
+  }
+
+  .new-playlist-tile__title,
+  .new-playlist-tile__hint {
+    display: none;
+  }
+
+  .new-playlist-tile .new-playlist__input,
+  .new-playlist-tile .btn--small {
+    min-height: 46px;
+    font-size: var(--text-md);
+  }
 }

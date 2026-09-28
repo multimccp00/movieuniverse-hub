@@ -15,6 +15,7 @@ from app.blocks.tmdb.throttle import SlidingWindow
 
 BASE_URL = "https://api.themoviedb.org/3"
 IMAGE_URL = "https://image.tmdb.org/t/p/w342"  # posters: browser loads them directly
+BACKDROP_URL = "https://image.tmdb.org/t/p/w1280"  # wide stills behind the page heroes
 
 _http = httpx.Client(timeout=10)  # one reusable connection pool
 _throttle = SlidingWindow(limit=40, window=10)

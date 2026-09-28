@@ -31,6 +31,7 @@ def test_add_and_remove_movie(client, tmdb):
     assert client.put(url, headers=ana).json()["movie_ids"] == [603]  # twice: still once
     detail = client.get(f"/playlists/{playlist['id']}").json()
     assert detail["movies"][0]["title"] == "The Matrix"
+    assert detail["movies"][0]["score"] > 8  # its combined score
 
     assert client.delete(url, headers=ana).json()["movie_ids"] == []
 
@@ -76,3 +77,4 @@ def test_unavailable_movie_does_not_break_playlist(client, tmdb, db):
     tmdb.status["/movie/603"] = 500  # ...and TMDB is down
     movies = client.get(f"/playlists/{playlist['id']}").json()["movies"]
     assert movies[0]["title"] == "Unavailable movie"
+    assert movies[0]["score"] is None

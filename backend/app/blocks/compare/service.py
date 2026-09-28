@@ -15,8 +15,8 @@ def _scored(db: Session, tmdb_id: int) -> ScoredMovie:
         movie = movies.detail(db, tmdb_id)
         score = combined_for(db, tmdb_id).score
     except TmdbError:  # unavailable movie: shown, but left out of the average
-        return ScoredMovie(id=tmdb_id, title="Unavailable movie", year=None, score=None)
-    return ScoredMovie(id=movie.id, title=movie.title, year=movie.year, score=score)
+        return ScoredMovie(id=tmdb_id, title="Unavailable movie", year=None, poster_url=None, score=None)
+    return ScoredMovie(id=movie.id, title=movie.title, year=movie.year, poster_url=movie.poster_url, score=score)
 
 
 def _side(playlist: Playlist, scored: dict[int, ScoredMovie]) -> PlaylistSide:

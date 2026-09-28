@@ -25,6 +25,11 @@ class PlaylistOut(BaseModel):
     movie_ids: list[int]
 
 
+class PlaylistMovieOut(MovieSummary):
+    """A movie on a playlist page: the card fields plus its combined score."""
+    score: float | None  # None = not enough information
+
+
 class PlaylistDetail(PlaylistOut):
     """One playlist with its movies' details, in playlist order."""
-    movies: list[MovieSummary]
+    movies: list[PlaylistMovieOut]

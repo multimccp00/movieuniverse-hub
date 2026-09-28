@@ -1,31 +1,107 @@
 .login {
-  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
   padding: var(--space-5);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+}
+
+.login__modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: var(--space-1);
+  border-radius: var(--radius-pill);
+  background: var(--color-fill);
+}
+
+.login__mode {
+  min-height: 40px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--color-muted);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.login__mode[aria-checked="true"] {
+  background: var(--color-text);
+  color: var(--color-bg);
 }
 
 .login__field {
-  gap: var(--space-1);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--text-sm);
+  color: var(--color-muted);
 }
 
-.login__error {
-  color: var(--color-danger);
+.login__input {
+  padding: var(--space-3) 14px;
+  font-size: var(--text-md);
 }
 
 .login__hint {
+  margin-top: -12px; /* sits right under the password field */
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+}
+
+.login__error {
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
   font-size: var(--text-sm);
 }
 
-/* Looks like a link: it switches the form, it doesn't submit it */
-.login__switch {
-  align-self: flex-start;
-  padding: 0;
-  border: none;
+.login__submit {
+  padding: 14px;
+  font-size: var(--text-md);
+}
+
+.login__demo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+}
+
+.login__chip {
+  padding: 3px 10px;
+  border: 1px solid var(--color-line-strong);
+  border-radius: var(--radius-pill);
   background: none;
-  color: var(--color-accent);
+  color: inherit;
   font: inherit;
-  font-size: var(--text-sm);
   cursor: pointer;
+}
+
+.login__chip:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.login__password {
+  font-family: var(--font-mono);
+}
+
+/* Phones: taller fields and buttons, easier to tap */
+@media (max-width: 640px) {
+  .login {
+    padding: var(--space-4) var(--page-gutter);
+  }
+
+  .login__mode {
+    min-height: 44px;
+  }
+
+  .login__input,
+  .login__submit {
+    min-height: 50px;
+  }
 }

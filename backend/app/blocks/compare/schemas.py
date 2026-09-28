@@ -8,6 +8,7 @@ class ScoredMovie(BaseModel):
     id: int
     title: str
     year: int | None
+    poster_url: str | None
     score: float | None  # combined score; None = not enough information
 
 

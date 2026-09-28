@@ -1,4 +1,4 @@
-// Search field. Submitting goes to /search?q=..., so every search has its own URL
+// Search pill. Pressing Enter goes to /search?q=..., so every search has its own URL
 // (shareable, and the browser Back button works).
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
@@ -20,17 +20,18 @@ export default function SearchBar() {
     if (trimmed) navigate(`/search?q=${encodeURIComponent(trimmed)}`)
   }
 
+  // No button: a form with one field submits on Enter by itself
   return (
     <form className="search-bar" role="search" onSubmit={handleSubmit}>
       <input
-        className="input search-bar__input"
+        className={`search-bar__input${urlQuery ? ' search-bar__input--active' : ''}`}
         type="search"
-        placeholder="Search movies…"
+        placeholder="Search movies"
         aria-label="Search movies"
+        enterKeyHint="search"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
-      <button className="btn btn--primary" type="submit">Search</button>
     </form>
   )
 }
