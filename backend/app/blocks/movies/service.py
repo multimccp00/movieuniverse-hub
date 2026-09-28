@@ -16,8 +16,8 @@ def _year(release_date: str | None) -> int | None:
     return int(release_date[:4]) if release_date else None
 
 
-def _poster(poster_path: str | None) -> str | None:
-    return tmdb.IMAGE_URL + poster_path if poster_path else None
+def _image(base: str, path: str | None) -> str | None:
+    return base + path if path else None
 
 
 def _summary(raw: dict) -> MovieSummary:
@@ -25,7 +25,8 @@ def _summary(raw: dict) -> MovieSummary:
         id=raw["id"],
         title=raw["title"],
         year=_year(raw.get("release_date")),
-        poster_url=_poster(raw.get("poster_path")),
+        poster_url=_image(tmdb.IMAGE_URL, raw.get("poster_path")),
+        backdrop_url=_image(tmdb.BACKDROP_URL, raw.get("backdrop_path")),
         vote_average=raw.get("vote_average") or 0,
         vote_count=raw.get("vote_count") or 0,
     )

@@ -4,6 +4,7 @@ def test_search_returns_trimmed_movies(client, tmdb):
     assert body["results"][0] == {
         "id": 603, "title": "The Matrix", "year": 1999,
         "poster_url": "https://image.tmdb.org/t/p/w342/matrix.jpg",
+        "backdrop_url": "https://image.tmdb.org/t/p/w1280/matrix-wide.jpg",
         "vote_average": 8.2, "vote_count": 26000,
     }
 
@@ -32,6 +33,7 @@ def test_detail_with_missing_data(client, tmdb):
     body = client.get("/movies/999").json()
     assert body["year"] is None
     assert body["poster_url"] is None
+    assert body["backdrop_url"] is None
     assert body["runtime"] is None
     assert body["vote_count"] == 0
 

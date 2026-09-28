@@ -4,11 +4,18 @@ from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.blocks.ratings import service
-from app.blocks.ratings.schemas import RatingIn, RatingSummary
+from app.blocks.ratings.schemas import MyRating, RatingIn, RatingSummary
 from app.blocks.users.models import User
 from app.blocks.users.service import get_current_user, get_optional_user
 
 router = APIRouter(prefix="/ratings", tags=["ratings"])
+
+
+# Declared before /{tmdb_id}: otherwise "mine" would be read as a movie id (and fail as not a number)
+@router.get("/mine", response_model=list[MyRating])
+def mine(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Your ratings, highest first."""
+    return [MyRating(tmdb_id=r.tmdb_id, stars=r.stars) for r in service.mine(db, user)]
 
 
 @router.get("/{tmdb_id}", response_model=RatingSummary)

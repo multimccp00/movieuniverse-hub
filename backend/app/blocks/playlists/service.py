@@ -4,9 +4,9 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.blocks.movies import service as movies
-from app.blocks.movies.schemas import MovieSummary
 from app.blocks.playlists.models import Playlist, PlaylistMovie
-from app.blocks.playlists.schemas import PlaylistDetail, PlaylistOut
+from app.blocks.playlists.schemas import PlaylistDetail, PlaylistMovieOut, PlaylistOut
+from app.blocks.ratings.service import combined_for
 from app.blocks.tmdb.client import TmdbError
 from app.blocks.users.models import User
 
@@ -70,22 +70,25 @@ def delete(db: Session, user: User, playlist_id: int) -> None:
     db.commit()
 
 
-def _summary_or_placeholder(db: Session, tmdb_id: int) -> MovieSummary:
+def _movie_or_placeholder(db: Session, tmdb_id: int) -> PlaylistMovieOut:
     # One missing movie (removed from TMDB, TMDB down) must not break the whole playlist page
     try:
-        return MovieSummary.model_validate(movies.detail(db, tmdb_id).model_dump())
+        movie = movies.detail(db, tmdb_id)
+        score = combined_for(db, tmdb_id).score
     except TmdbError:
-        return MovieSummary(
-            id=tmdb_id, title="Unavailable movie", year=None,
-            poster_url=None, vote_average=0, vote_count=0,
+        return PlaylistMovieOut(
+            id=tmdb_id, title="Unavailable movie", year=None, poster_url=None,
+            backdrop_url=None, vote_average=0, vote_count=0, score=None,
         )
+    # model_validate ignores the detail-only fields (overview, genres...)
+    return PlaylistMovieOut.model_validate({**movie.model_dump(), "score": score})
 
 
 def detail(db: Session, playlist_id: int) -> PlaylistDetail:
     playlist = existing(db, playlist_id)
     return PlaylistDetail(
         **to_out(playlist).model_dump(),
-        movies=[_summary_or_placeholder(db, m.tmdb_id) for m in playlist.movies],
+        movies=[_movie_or_placeholder(db, m.tmdb_id) for m in playlist.movies],
     )
 
 

@@ -48,3 +48,14 @@ def test_rating_requires_login_and_real_movie(client, tmdb):
     assert client.put("/ratings/603", json={"stars": 5}).status_code == 401
     assert client.put("/ratings/12345", json={"stars": 5}, headers=login(client, "ana")).status_code == 404
     assert client.get("/ratings/12345").status_code == 404
+
+
+def test_my_ratings_best_first(client, tmdb):
+    ana = login(client, "ana")
+    client.put("/ratings/603", json={"stars": 7}, headers=ana)
+    client.put("/ratings/777", json={"stars": 9}, headers=ana)
+    client.put("/ratings/603", json={"stars": 10}, headers=login(client, "bruno"))  # not ana's
+    assert client.get("/ratings/mine", headers=ana).json() == [
+        {"tmdb_id": 777, "stars": 9}, {"tmdb_id": 603, "stars": 7},
+    ]
+    assert client.get("/ratings/mine").status_code == 401
